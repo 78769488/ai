@@ -17,7 +17,7 @@ class Data(models.Model):
     dataDate = models.DateField(verbose_name="数据日期")
     nextDate = models.DateField(verbose_name="下个交易日")
     upTime = models.DateTimeField(verbose_name="数据更新时间", auto_now=True)
-    dataType = models.CharField(max_length=32, verbose_name="数据类型, 0 :股票 1: 期货")
+    dataType = models.IntegerField(max_length=32, verbose_name="数据类型, 0 :股票 1: 期货")
     upUser = models.CharField(max_length=32, verbose_name="数据更新者")
 
     def __str__(self):
