@@ -26,13 +26,11 @@ from byx import models
 
 
 def index(request):
-    print(1111, request.GET.get("para"))
     return render(request,
                   "ai.html",)
 
 
 def query(request):
-    print(2222, request.GET.get("para"))
     para = request.GET.get("para")  # 获取用户输入的内容
     ret = {"messages":
                [{"msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
@@ -126,7 +124,7 @@ def query(request):
                     datas = models.Data.objects.filter(name__istartswith=query_name)
                 if datas:
                     for data in datas:
-                        if data.dataType == "0":  # 查询结果为股票
+                        if data.dataType == 0:  # 查询结果为股票
                             rs = "代码:{code}<br>名称:{name}<br>涨幅:{gains}<br>收盘:{closing}<br>成交量:{turnover}<br>总金额:{totalMoney}<br>" \
                                   "{today}压力:{pressure}<br>{today}支撑:{support}<br>{tomorrow}压力:{tPressure}<br>{tomorrow}支撑:{tSupport}<br>"
                             dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
