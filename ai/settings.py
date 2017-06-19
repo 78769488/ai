@@ -25,7 +25,7 @@ SECRET_KEY = 'nmlwm&9dh8xc+rw+b8y0^6coa&k%upu8uk!u8_2wwnhg37nm-#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'MfcAi.urls'
+ROOT_URLCONF = 'ai.urls'
 
 TEMPLATES = [
     {
@@ -134,3 +134,4 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+STATIC_ROOT = os.path.join(BASE_DIR, "static_assets")
