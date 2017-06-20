@@ -122,8 +122,12 @@ def query(request):
                     else:
                         new_para = para
                     futures = models.Futures.objects.filter(veriety__startswith=new_para)
-                    print(futures, type(futures))
-                    if futures:
+                    if futures.count() >= 1:
+                        ret = {"messages":
+                                   [{"msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
+                                    ]
+                               }
+                    elif futures.count() >= 1:
                         num = 0
                         for future in futures:
                             num += 1
