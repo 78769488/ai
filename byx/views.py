@@ -36,7 +36,7 @@ def query(request):
                [{"msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
                 ]
            }
-    # 不需要查库的操作
+    # 首次登录提示信息
     if para == "index":
         ret = {"messages":
                    [{"t": "0",
@@ -115,41 +115,74 @@ def query(request):
                 flag = False
                 if re.match(r'[A-Za-z]+', para):  # 匹配到纯字母, 获取期货信息
                     datas = models.Data.objects.filter(name__istartswith=para)
-                else:  # 查询品种名称与其他名称对应关系
-                    product = models.Products.objects.filter(pname=para).first()
-                    if product:
-                        query_name = product.fname
+                else:
+                    # 先获取期货品种信息
+                    if para.endswith("更多"):
+                        new_para = para.replace("更多", "")
                     else:
-                        query_name = para
-                    datas = models.Data.objects.filter(name__istartswith=query_name)
-                if datas:
-                    for data in datas:
-                        if data.dataType == 0:  # 查询结果为股票
-                            rs = "代码:{code}<br>名称:{name}<br>涨幅:{gains}<br>收盘:{closing}<br>成交量:{turnover}<br>总金额:{totalMoney}<br>" \
-                                  "{today}压力:{pressure}<br>{today}支撑:{support}<br>{tomorrow}压力:{tPressure}<br>{tomorrow}支撑:{tSupport}<br>"
-                            dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
-                                       totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, tPressure=data.tPressure,
-                                       tSupport=data.tSupport, today=date2str(data.dataDate), tomorrow=date2str(data.nextDate))
-                            ret = {"messages":
-                                       [{"t": "0",
-                                         "msg": rs.format(**dic)}
-                                        ]
-                                   }
-                            break
-                        if re.match(r'.*\d+\Z', data.name):
-                            flag = True
-                            msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=data.name)
-                    if flag:
+                        new_para = para
+                    futures = models.Futures.objects.filter(veriety__startswith=new_para)
+                    print(futures, type(futures))
+                    if futures:
+                        num = 0
+                        for future in futures:
+                            num += 1
+                            if futures.count() > 12:  # 多于12条记录, 分次返回
+                                if para.endswith("更多"):
+                                    print("更多.................")
+                                    if num < 24:
+                                        if num >= 12:
+                                            msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=future.name)
+                                elif num < 12:
+                                    msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=future.name)
+                                else:
+                                    print(num)
+                                    more_info = para + "更多"
+                                    msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=more_info)
+                                    print(msg)
+                                    break
+                            else:
+                                msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=future.name)
                         ret = {"messages":
                                    [{"t": "1",
                                      "msg": msg}
                                     ]
                                }
-                else:
-                    ret = {"messages":
-                               [{"msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
-                                ]
-                           }
+                    else:
+                        product = models.Products.objects.filter(pname=para).first()
+                        if product:
+                            query_name = product.fname
+                        else:
+                            query_name = para
+                        data_all = models.Data.objects.filter(name__istartswith=query_name)
+                        if data_all:
+                            for data in data_all:
+                                if data.dataType == 0:  # 查询结果为股票
+                                    rs = "代码:{code}<br>名称:{name}<br>涨幅:{gains}<br>收盘:{closing}<br>成交量:{turnover}<br>总金额:{totalMoney}<br>" \
+                                          "{today}压力:{pressure}<br>{today}支撑:{support}<br>{tomorrow}压力:{tPressure}<br>{tomorrow}支撑:{tSupport}<br>"
+                                    dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
+                                               totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, tPressure=data.tPressure,
+                                               tSupport=data.tSupport, today=date2str(data.dataDate), tomorrow=date2str(data.nextDate))
+                                    ret = {"messages":
+                                               [{"t": "0",
+                                                 "msg": rs.format(**dic)}
+                                                ]
+                                           }
+                                    break
+                                if re.match(r'.*\d+\Z', data.name):
+                                    flag = True
+                                    msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=data.name)
+                            if flag:
+                                ret = {"messages":
+                                           [{"t": "1",
+                                             "msg": msg}
+                                            ]
+                                       }
+                        else:
+                            ret = {"messages":
+                                       [{"msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
+                                        ]
+                                   }
     return HttpResponse("%s" % json.dumps(ret))
 
 
