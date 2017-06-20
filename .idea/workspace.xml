@@ -4,8 +4,6 @@
     <list default="true" id="0dd7fec1-8180-4591-9969-c4db47358b34" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ai/settings.py" afterPath="$PROJECT_DIR$/ai/settings.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/js/jquery.cookie.js" afterPath="$PROJECT_DIR$/static/js/jquery.cookie.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/h5input.html" afterPath="$PROJECT_DIR$/templates/h5input.html" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -99,8 +97,8 @@
       <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ai/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="242">
-              <caret line="43" column="0" lean-forward="true" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
+            <state relative-caret-position="128">
+              <caret line="37" column="30" lean-forward="true" selection-start-line="37" selection-start-column="30" selection-end-line="37" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -609,7 +607,14 @@
       <option name="project" value="LOCAL" />
       <updated>1497949101208</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="0620 -2 &#10;1 解决跨域请求&#10;  pip3 install django-cors-headers&#10;  &#10;  在settings.py中增加：&#10;  INSTALLED_APPS = (&#10;&#9;  ...&#10;&#9;  'corsheaders',&#10;&#9;  ...&#10;&#9;)&#10;&#9; &#10;&#9;...&#10;&#9; &#10;&#9;MIDDLEWARE_CLASSES = (&#10;&#9;  ...&#10;&#9;  'corsheaders.middleware.CorsMiddleware',&#10;&#9;  'django.middleware.common.CommonMiddleware',&#10;&#9;  ...&#10;&#9;)">
+      <created>1497952714452</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1497952714452</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -618,10 +623,10 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="manage.py@ai" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3418708" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10309829" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -641,6 +646,32 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="processedProjectFiles" value="true" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
@@ -653,7 +684,8 @@
     <MESSAGE value="0619-3" />
     <MESSAGE value="0619-4" />
     <MESSAGE value="0620&#10;1 增加期货品种查询&#10;2 期货品种查询结果多于12条, 分次返回" />
-    <option name="LAST_COMMIT_MESSAGE" value="0620&#10;1 增加期货品种查询&#10;2 期货品种查询结果多于12条, 分次返回" />
+    <MESSAGE value="0620 -2 &#10;1 解决跨域请求&#10;  pip3 install django-cors-headers&#10;  &#10;  在settings.py中增加：&#10;  INSTALLED_APPS = (&#10;&#9;  ...&#10;&#9;  'corsheaders',&#10;&#9;  ...&#10;&#9;)&#10;&#9; &#10;&#9;...&#10;&#9; &#10;&#9;MIDDLEWARE_CLASSES = (&#10;&#9;  ...&#10;&#9;  'corsheaders.middleware.CorsMiddleware',&#10;&#9;  'django.middleware.common.CommonMiddleware',&#10;&#9;  ...&#10;&#9;)" />
+    <option name="LAST_COMMIT_MESSAGE" value="0620 -2 &#10;1 解决跨域请求&#10;  pip3 install django-cors-headers&#10;  &#10;  在settings.py中增加：&#10;  INSTALLED_APPS = (&#10;&#9;  ...&#10;&#9;  'corsheaders',&#10;&#9;  ...&#10;&#9;)&#10;&#9; &#10;&#9;...&#10;&#9; &#10;&#9;MIDDLEWARE_CLASSES = (&#10;&#9;  ...&#10;&#9;  'corsheaders.middleware.CorsMiddleware',&#10;&#9;  'django.middleware.common.CommonMiddleware',&#10;&#9;  ...&#10;&#9;)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -986,8 +1018,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ai/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="43" column="0" lean-forward="true" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
+        <state relative-caret-position="128">
+          <caret line="37" column="30" lean-forward="true" selection-start-line="37" selection-start-column="30" selection-end-line="37" selection-end-column="30" />
           <folding />
         </state>
       </provider>
