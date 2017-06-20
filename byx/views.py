@@ -122,7 +122,7 @@ def query(request):
                     else:
                         new_para = para
                     futures = models.Futures.objects.filter(veriety__startswith=new_para)
-                    if futures.count() >= 1:
+                    if futures.count() >= 24:
                         ret = {"messages":
                                    [{"msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
                                     ]
