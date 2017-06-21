@@ -1,37 +1,39 @@
-from django.shortcuts import render, HttpResponse
-from django.db import connection
-# Create your views here.
-# from django.contrib.auth.models import User, Group
-# from rest_framework import viewsets
-# from byx.serializers import UserSerializers, GroupSerializer
 import re
 import json
+import logging
 from byx import models
+from datetime import datetime
+# from django.db import connection
+from django.shortcuts import render, HttpResponse
 
-
-# class UserViewSet(viewsets.ModelViewSet):
-#     """
-#     允许查看和编辑user的API endpoint
-#     """
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializers
-#
-#
-# class GroupViewSet(viewsets.ModelViewSet):
-#     """
-#     允许查看和编辑group的API endpoint
-#     """
-#     queryset = Group.objects.all()
-#     serializer_class = GroupSerializer
+logger = logging.getLogger('django')
+mylogger = logging.getLogger('project.custom')
+type_dic = {
+    0: "沪深A股",
+    1: "大连商品期货",
+    2: "上海商品期货",
+    3: "郑州商品期货",
+    4: "中金所期货",
+    10: "用户首次上行",
+    11: "固定内容(如宝盈线)",
+    12: "期货品种",
+    98: "首次上行",
+    99: "无效上行"
+}
 
 
 def index(request):
+    data_count(10)  # 用户首次上行
+    logger.debug(request)
+    mylogger.info(request)
     return render(request,
                   "ai.html",)
 
 
 def query(request):
     para = request.GET.get("para")  # 获取用户输入的内容
+    logger.debug("%s-%s" % (para, request))
+    mylogger.info("%s-%s" % (para, request))
     ret_default = {"messages":
                        [{"t": "0",
                          "msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
@@ -57,6 +59,7 @@ def query(request):
                     ]
                }
     elif para == "宝盈线":
+        data_count(11)  # 固定内容回复
         ret = {"messages":
                    [{"t": "0",
                      "msg": "宝盈线是由每日支撑位和压力位相连接构成的策略图形。根据趋势信号预判每日支撑位和压力位，为您提供合理的投资建议。"
@@ -94,14 +97,18 @@ def query(request):
                        }
             elif re.match(r'^[A-Za-z]+\d+$', para):  # 以字母开头以数字结尾的字符串, 为期货信息, 如果cu1711
                 code = re.search(r'^[A-Za-z]+', para)
-                name = models.Futures.objects.filter(code=code.group())
-                ret = {"messages":
-                           [{"t": "0",
-                             "msg": query_futures_code(para)},
-                            {"t": "1",
-                             "msg": "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">您还想查询{name}的其它合约吗?(Y)</a>".format(name=name)}
-                            ]
-                       }
+                obj = models.Futures.objects.filter(code=code.group()).first()
+                if obj:
+                    ret = {"messages":
+                               [{"t": "0",
+                                 "msg": query_futures_code(para)},
+                                {"t": "1",
+                                 "msg": "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">您还想查询{name}的其它合约吗?(Y)</a>".format(name=obj.name)}
+                                ]
+                           }
+                else:
+                    data_count(99)
+                    ret = ret_default
             elif re.match(r'^.+\d+$', para):  # 以中文开头以数字结尾的字符串, 为期货信息, 如果铜1711
                 new_para = re.search(r'\d+', para).group()
                 ret = {"messages":
@@ -118,6 +125,7 @@ def query(request):
                     if data_all:
                         for data in data_all:
                             msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=data.name)
+                            data_type = data.dataType
                         ret = {"messages":
                                    [{"t": "1",
                                      "msg": msg}
@@ -125,6 +133,8 @@ def query(request):
                                }
                     else:
                         ret = ret_default
+                        data_type = 99
+                    data_count(data_type)
                 else:  # 先获取期货品种信息
                     if para.endswith("更多"):
                         new_para = para.replace("更多", "")
@@ -134,9 +144,11 @@ def query(request):
 
                     if futures.count() >= 24:
                         ret = ret_default
+                        data_count(99)
                     elif futures.count() >= 1:
                         num = 0
                         for future in futures:
+                            data_type = 12
                             num += 1
                             if futures.count() > 15:  # 多于15条记录, 分次返回
                                 if para.endswith("更多"):
@@ -155,6 +167,7 @@ def query(request):
                                      "msg": msg}
                                     ]
                                }
+                        data_count(data_type)
                     else:  # 不是期货品种关键字
                         product = models.Products.objects.filter(pname=para).first()  # 获取期货产品关键字
                         if product:
@@ -162,6 +175,7 @@ def query(request):
                         else:
                             query_name = para
                         data_all = models.Data.objects.filter(name__istartswith=query_name)
+                        data_type = 99
                         if data_all:
                             counts = data_all.count()
                             num = 0
@@ -169,6 +183,7 @@ def query(request):
                             for data in data_all:
                                 num += 1
                                 if data.dataType == 0:  # 查询结果为股票
+                                    data_type = 0
                                     rs = "代码:{code}<br>名称:{name}<br>涨幅:{gains}<br>收盘:{closing}<br>成交量:{turnover}<br>总金额:{totalMoney}<br>" \
                                           "{today}压力:{pressure}<br>{today}支撑:{support}<br>{tomorrow}压力:{tPressure}<br>{tomorrow}支撑:{tSupport}<br>"
                                     dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
@@ -176,39 +191,29 @@ def query(request):
                                                tSupport=data.tSupport, today=date2str(data.dataDate), tomorrow=date2str(data.nextDate))
                                     msg = rs.format(**dic)
                                     t = "0"
-                                    # ret = {"messages":
-                                    #            [{"t": "0",
-                                    #              "msg": rs.format(**dic)}
-                                    #             ]
-                                    #        }
                                     break
                                 # if re.match(r'.*\d+\Z', data.name):
                                 else:  # 查询结果为期货信息(datatype>=1)
                                     if counts > 15:  # 结果大于24条, 返回帮助信息
                                         t = "0"
                                         msg = "您的关键词不太详细哦，再告诉小美一次吧!"
+                                        data_type = 99
                                         break
                                     if counts <= 15:  # 小于15条, 一次返回所有
+                                        data_type = data.dataType
                                         t = "1"
                                         msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=data.name)
-                                    # else:  # 大于15, 小于24, 分2次返回
-                                    #     if para.endswith("更多"):
-                                    #         print(para, num)
-                                    #         if num >= 12:
-                                    #             msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=data.name)
-                                    #     elif num < 12:
-                                    #         msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=data.name)
-                                    #     else:
-                                    #         more_info = para + "更多"
-                                    #         msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=more_info)
-                                    #         break
                             ret = {"messages":
                                        [{"t": t,
                                          "msg": msg}
                                         ]
                                    }
+                            data_count(data_type)
                         else:
                             ret = ret_default
+                            data_count(99)
+    logger.debug(ret)
+    mylogger.info(ret)
     return HttpResponse("%s" % json.dumps(ret))
 
 
@@ -218,16 +223,23 @@ def query_stock(para):
     :param para: 股票代码或者股票名称
     :return: 查询结果
     """
-    data = models.Data.objects.filter(code=para).first()
-    if data:
-        ret = "代码:{code}<br>名称:{name}<br>涨幅:{gains}<br>收盘:{closing}<br>成交量:{turnover}<br>总金额:{totalMoney}<br>" \
-              "{today}压力:{pressure}<br>{today}支撑:{support}<br>{tomorrow}压力:{tPressure}<br>{tomorrow}支撑:{tSupport}<br>"
-        dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
-                   totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, tPressure=data.tPressure,
-                   tSupport=data.tSupport, today=date2str(data.dataDate), tomorrow=date2str(data.nextDate))
-        return ret.format(**dic)
-    else:
-        return "您的关键词不太详细哦，再告诉小美一次吧!"
+    try:
+        data = models.Data.objects.filter(code=para).first()
+        if data:
+            ret = "代码:{code}<br>名称:{name}<br>涨幅:{gains}<br>收盘:{closing}<br>成交量:{turnover}<br>总金额:{totalMoney}<br>" \
+                  "{today}压力:{pressure}<br>{today}支撑:{support}<br>{tomorrow}压力:{tPressure}<br>{tomorrow}支撑:{tSupport}<br>"
+            dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
+                       totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, tPressure=data.tPressure,
+                       tSupport=data.tSupport, today=date2str(data.dataDate), tomorrow=date2str(data.nextDate))
+            msg = ret.format(**dic)
+            data_type = data.dataType
+        else:
+            msg = "您的关键词不太详细哦，再告诉小美一次吧!"
+            data_type = 99
+        data_count(data_type)
+        return msg
+    except Exception as e:
+        logger.error(e)
 
 
 def query_futures_name(para):
@@ -236,16 +248,23 @@ def query_futures_name(para):
     :param para: 
     :return: 
     """
-    data = models.Data.objects.filter(name__iendswith=para).first()
-    if data:
-        ret = "代码:{code}<br>名称:{name}<br>涨幅:{gains}<br>收盘:{closing}<br>成交量:{turnover}<br>总金额:{totalMoney}<br>" \
-              "{today}压力:{pressure}<br>{today}支撑:{support}<br>{tomorrow}压力:{tPressure}<br>{tomorrow}支撑:{tSupport}<br>"
-        dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
-                   totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, tPressure=data.tPressure,
-                   tSupport=data.tSupport, today=date2str(data.dataDate), tomorrow=date2str(data.nextDate))
-        return ret.format(**dic)
-    else:
-        return "您的关键词不太详细哦，再告诉小美一次吧!"
+    try:
+        data = models.Data.objects.filter(name__iendswith=para).first()
+        if data:
+            ret = "代码:{code}<br>名称:{name}<br>涨幅:{gains}<br>收盘:{closing}<br>成交量:{turnover}<br>总金额:{totalMoney}<br>" \
+                  "{today}压力:{pressure}<br>{today}支撑:{support}<br>{tomorrow}压力:{tPressure}<br>{tomorrow}支撑:{tSupport}<br>"
+            dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
+                       totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, tPressure=data.tPressure,
+                       tSupport=data.tSupport, today=date2str(data.dataDate), tomorrow=date2str(data.nextDate))
+            msg = ret.format(**dic)
+            data_type = data.dataType
+        else:
+            msg = "您的关键词不太详细哦，再告诉小美一次吧!"
+            data_type = 99
+        data_count(data_type)
+        return msg
+    except Exception as e:
+        logger.error(e)
 
 
 def query_futures_code(para):
@@ -254,19 +273,42 @@ def query_futures_code(para):
     :param para: 
     :return: 
     """
-    data = models.Data.objects.filter(code__icontains=para).first()
-    if data:
-        ret = "代码:{code}<br>名称:{name}<br>涨幅:{gains}<br>收盘:{closing}<br>成交量:{turnover}<br>总金额:{totalMoney}<br>" \
-              "{today}压力:{pressure}<br>{today}支撑:{support}<br>{tomorrow}压力:{tPressure}<br>{tomorrow}支撑:{tSupport}<br>"
-        dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
-                   totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, tPressure=data.tPressure,
-                   tSupport=data.tSupport, today=date2str(data.dataDate), tomorrow=date2str(data.nextDate))
-        return ret.format(**dic)
-    else:
-        return "您的关键词不太详细哦，再告诉小美一次吧!"
+    try:
+        data = models.Data.objects.filter(code__icontains=para).first()
+        if data:
+            ret = "代码:{code}<br>名称:{name}<br>涨幅:{gains}<br>收盘:{closing}<br>成交量:{turnover}<br>总金额:{totalMoney}<br>" \
+                  "{today}压力:{pressure}<br>{today}支撑:{support}<br>{tomorrow}压力:{tPressure}<br>{tomorrow}支撑:{tSupport}<br>"
+            dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
+                       totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, tPressure=data.tPressure,
+                       tSupport=data.tSupport, today=date2str(data.dataDate), tomorrow=date2str(data.nextDate))
+            msg = ret.format(**dic)
+            data_type = data.dataType
+        else:
+            msg = "您的关键词不太详细哦，再告诉小美一次吧!"
+            data_type = 99
+        data_count(data_type)
+        return msg
+    except Exception as e:
+        logger.error(e)
 
 
 def date2str(dt):
     return "{}年{}月{}日".format(dt.year, dt.month, dt.day)
 
 
+def data_count(data_type):
+    """
+    数据统计
+    :param data_type: 0:股票, 1-4:期货, 10: 用户首次上行, 11: 固定内容（如：宝盈线）, 12:期货品种, 99: 无效上行
+    :return: 
+    """
+    current_date = datetime.now().date()
+    try:
+        obj = models.Tj.objects.filter(type=data_type, date=current_date).first()
+        if obj:
+            obj.counts += 1
+            models.Tj.objects.filter(type=data_type, date=current_date).update(counts=obj.counts, name=type_dic.get(data_type, "无效上行"))
+        else:
+            models.Tj.objects.create(type=data_type, date=current_date, counts=1, name=type_dic.get(data_type, "无效上行"))
+    except Exception as e:
+        logger.error(e)

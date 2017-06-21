@@ -63,7 +63,8 @@ class Products(models.Model):
 class Tj(models.Model):
     """用户交互的统计结果，统计每天的交互量，上下行，分期货、股票、品种类别、无法识别等类别，以及总量"""
     date = models.DateField(verbose_name="日期")
-    type = models.CharField(max_length=32, verbose_name="上行类别")
+    type = models.IntegerField(verbose_name="上行类别")
+    name = models.CharField(max_length=32, verbose_name="上行类别名称")
     counts = models.IntegerField(verbose_name="上行次数")
 
     def __str__(self):
