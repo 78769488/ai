@@ -1,0 +1,174 @@
+<result>
+    <errinfo>
+        <errcode>0</errcode>
+        <errmsg><![CDATA[]]></errmsg>
+    </errinfo>
+    <summary>
+        <timespent>0.005</timespent>
+    </summary>
+    <body>
+        <response type="system">
+            <bearer>1007167487</bearer>
+            <who>1007167487</who>
+            <data>
+                <info><![CDATA[Regist bearer]]></info>
+            </data>
+        </response>
+        <response type="system">
+            <bearer>1007167487</bearer>
+            <who>1981</who>
+            <data>
+                <info><![CDATA[Go into script.]]></info>
+            </data>
+        </response>
+        <response type="system">
+            <bearer>1007167487</bearer>
+            <who>1981</who>
+            <data>
+                <info><![CDATA[Go out from script ]]></info>
+            </data>
+        </response>
+        <response type="system">
+            <bearer>1007167487</bearer>
+            <who>21939</who>
+            <data>
+                <info><![CDATA[Go into script.]]></info>
+            </data>
+        </response>
+        <response type="system">
+            <bearer>1007167487</bearer>
+            <who>21939</who>
+            <data>
+                <info><![CDATA[Go out from script ]]></info>
+            </data>
+        </response>
+        <response type="system">
+            <bearer>1007167487</bearer>
+            <who>5301</who>
+            <data>
+                <info><![CDATA[Go into script.]]></info>
+            </data>
+        </response>
+        <response type="message">
+            <bearer>1007167487</bearer>
+            <who>5301</who>
+            <data>
+                <field key="appendinfo"><![CDATA[21939]]></field>
+                <field key="chargecode"><![CDATA[106020111]]></field>
+                <field key="continuetotal"><![CDATA[1]]></field>
+                <field key="currentindex"><![CDATA[1]]></field>
+                <field key="dialogid"><![CDATA[]]></field>
+                <field key="isreport"><![CDATA[0]]></field>
+                <field key="message"><![CDATA[很遗憾，今日话费兑换金已全部送出啦，欢迎明天继续参与“红包大风暴”，详情见活动说明|00返回]]></field>
+                <field key="msisdn"><![CDATA[15071398862]]></field>
+                <field key="port"><![CDATA[15000]]></field>
+                <field key="routeflag"><![CDATA[55]]></field>
+                <field key="senddelay"><![CDATA[0]]></field>
+                <field key="serviceaddr"><![CDATA[100]]></field>
+                <field key="servicecode"><![CDATA[]]></field>
+                <field key="servicetype"><![CDATA[sms]]></field>
+            </data>
+        </response>
+        <response type="system">
+            <bearer>1007167487</bearer>
+            <who>5301</who>
+            <data>
+                <info><![CDATA[Go out from script ]]></info>
+            </data>
+        </response>
+        <response type="system">
+            <bearer>1007167487</bearer>
+            <who>1007167487</who>
+            <data>
+                <info><![CDATA[Unregist bearer]]></info>
+            </data>
+        </response>
+    </body>
+</result>
+14:39:15,853 DEBUG ServiceTest:? - root :<result>
+<errinfo>
+    <errcode>0</errcode>
+    <errmsg><![CDATA[]]></errmsg>
+</errinfo>
+<summary>
+    <timespent>0.005</timespent>
+</summary>
+<body>
+    <response type="system">
+        <bearer>1007167487</bearer>
+        <who>1007167487</who>
+        <data>
+            <info><![CDATA[Regist bearer]]></info>
+        </data>
+    </response>
+    <response type="system">
+        <bearer>1007167487</bearer>
+        <who>1981</who>
+        <data>
+            <info><![CDATA[Go into script.]]></info>
+        </data>
+    </response>
+    <response type="system">
+        <bearer>1007167487</bearer>
+        <who>1981</who>
+        <data>
+            <info><![CDATA[Go out from script ]]></info>
+        </data>
+    </response>
+    <response type="system">
+        <bearer>1007167487</bearer>
+        <who>21939</who>
+        <data>
+            <info><![CDATA[Go into script.]]></info>
+        </data>
+    </response>
+    <response type="system">
+        <bearer>1007167487</bearer>
+        <who>21939</who>
+        <data>
+            <info><![CDATA[Go out from script ]]></info>
+        </data>
+    </response>
+    <response type="system">
+        <bearer>1007167487</bearer>
+        <who>5301</who>
+        <data>
+            <info><![CDATA[Go into script.]]></info>
+        </data>
+    </response>
+    <response type="message">
+        <bearer>1007167487</bearer>
+        <who>5301</who>
+        <data>
+            <field key="appendinfo"><![CDATA[21939]]></field>
+            <field key="chargecode"><![CDATA[106020111]]></field>
+            <field key="continuetotal"><![CDATA[1]]></field>
+            <field key="currentindex"><![CDATA[1]]></field>
+            <field key="dialogid"><![CDATA[]]></field>
+            <field key="isreport"><![CDATA[0]]></field>
+            <field key="message"><![CDATA[很遗憾，今日话费兑换金已全部送出啦，欢迎明天继续参与“红包大风暴”，详情见活动说明|00返回]]></field>
+            <field key="msisdn"><![CDATA[15071398862]]></field>
+            <field key="port"><![CDATA[15000]]></field>
+            <field key="routeflag"><![CDATA[55]]></field>
+            <field key="senddelay"><![CDATA[0]]></field>
+            <field key="serviceaddr"><![CDATA[100]]></field>
+            <field key="servicecode"><![CDATA[]]></field>
+            <field key="servicetype"><![CDATA[sms]]></field>
+        </data>
+    </response>
+    <response type="system">
+        <bearer>1007167487</bearer>
+        <who>5301</who>
+        <data>
+            <info><![CDATA[Go out from script ]]></info>
+        </data>
+    </response>
+    <response type="system">
+        <bearer>1007167487</bearer>
+        <who>1007167487</who>
+        <data>
+            <info><![CDATA[Unregist bearer]]></info>
+        </data>
+    </response>
+</body>
+</result>

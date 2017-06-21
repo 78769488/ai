@@ -1,0 +1,1933 @@
+<?xml version="1.0" encoding="gb2312"?>
+
+<!--
+	脚本编写：李暾
+	编写时间：2017年3月15日
+	修改时间：2017年3月15日
+	版    本：V 1.00
+	脚本编号：
+	业务名称：第3季
+	使用平台：
+-->
+
+<bwisp-script version="2.0" xmlns="http://www.bwisp.com/bwisp-script"
+              xmlns:str="http://www.bwisp.com/libstr.so"
+              xmlns:conn="http://www.bwisp.com/libscriptconnector.so"
+              xmlns:userdata="http://www.bwisp.com/libscriptproductuserdata.so"
+              xmlns:ywdata="http://www.bwisp.com/libywdata.so"
+              xmlns:feecode="http://www.bwisp.com/libscriptproductchargecode.so"
+              xmlns:ywg="http://www.bwisp.com/libywgeneral.so"
+              xmlns:std="http://www.bwisp.com/libstd.so"
+              xmlns:proxy="http://www.bwisp.com/libproxy.so"
+              xmlns:smsorder="http://www.bwisp.com/libsmsorder.so"
+
+>
+
+    <global>
+
+        <var name="$rsglobal" type="integer" default="0"/>
+        <var name="$_ywbidtmp" type="integer" default="19023"/><!--兑换流量的中奖信息记录在ywid为19023的脚本中-->
+
+        <!--下面2个业务代码来源：根据喻超提供的“安徽快信包月”指令*到106581000，
+          发现路由到一个点播业务，查看业务脚本后，发现业务将指令转发给ngboss，ngboss回复信息有向，
+          “安徽快信包月点播16622”发送订购信息，在“安徽快信包月点播16622”脚本中发现订购了一下2个业务。-->
+
+        <var name="$servid" type="string" size="" default="AHKXBY"/> <!--安徽定制业务ID-->
+        <var name="$servidds" type="string" size="" default="AHBYXF"/> <!--安徽定制业务IDAHKXDSBYCCMP-->
+        <var name="$routeds" type="integer" default="54"/>
+        <var name="$route" type="integer" default="55"/>
+        <var name="$fgnum" type="integer" default="2"/>
+        <var name="$pldayjjbz" type="integer" default="660"/><!--每月最高话费金额-->
+        <var name="$lpgrmax" type="integer" default="300"/><!--每月单用户兑换最高话费金额-->
+        <var name="$perioddays" type="integer" default="1"/>
+        <var name="$seperatetime" type="string" size="" default="00:00:00"/>
+
+
+        <var name="$ywcode1" type="string" size="" default="AH201703HFCX"/>
+        <var name="$ywcode20" type="string" size="" default="AH201703DLHLGZ"/>
+        <var name="$ywcode21" type="string" size="" default="AH201703DLHLCX"/>
+        <var name="$ywcode22" type="string" size="" default="AH201703DLHLZJ"/>
+        <var name="$ywcode30" type="string" size="" default="AH201703DLLPZZ"/>
+        <var name="$ywcode31" type="string" size="" default="AH201703DLLPGZ"/>
+        <var name="$ywcode32" type="string" size="" default="AH201703DLLPCX"/>
+        <var name="$ywcode4" type="string" size="" default="AH201703DLLPSM"/>
+        <var name="$ywcode50" type="string" size="" default="AH201703DLLPLL"/>
+        <var name="$ywcode51" type="string" size="" default="AH201703DLLPDH"/>
+        <var name="$ywcode52" type="string" size="" default="AH201703DBQB"/>
+        <var name="$ywcode53" type="string" size="" default="AH201703DBQBGZ"/>
+
+
+        <var name="$key0" type="string" size="" default="ALLSTATUS"/><!-- 记录用户对于整个业务的状态 -->
+        <var name="$key" type="string" size="" default="HFCJ"/><!-- 话费查询抽奖 -->
+
+        <var name="$keydlll" type="string" size="" default="DLLL"/><!-- 首次登陆赠送话费 -->
+
+        <!--var name="$keylpll" type="string" size="" default="LPLL"/--><!-- 轮盘赠送话费弃用的key -->
+
+        <var name="$keysdl" type="string" size="" default="DAY"/><!--记录每天是否首次登陆-->
+        <var name="$keykxb" type="string" size="" default="KXB"/><!--记录快信币-->
+
+        <var name="$keylpallcount" type="string" size="" default="LPALLCOUNT"/><!-- 轮盘所有上行-->
+        <var name="$keydbcount" type="string" size="" default="DBCOUNT"/><!-- 夺宝所有上行-->
+        <var name="$keydhllall" type="string" size="" default="DHALLCOUNT"/><!--已兑换金额-->
+
+
+        <var name="$msgzd1" type="string" size="" default="很遗憾，今日话费兑换金已全部送出啦，欢迎明天继续参与“红包大风暴”，详情见活动说明|00返回"
+             encoding="gb2312"/>
+
+        <var name="$msgzd2" type="string" size="" default="您本月刮刮乐次数已用完，请给其他亲留点机会哟！期待您继续参与下月活动，详情请返回见活动说明！|00返回"
+             encoding="gb2312"/>
+
+        <var name="$msg200" type="string" size=""
+             default="《登陆攒金币》推出快信币账户，后期将会相继出台各种惊喜用途，敬请期待！快信用户每日第一次拨打**100#登陆快信100，|9下页" encoding="gb2312"/>
+        <var name="$msg201" type="string" size=""
+             default="即可获得100快信币（快信币可累计，但用户若退订快信套餐包月即清零）。用户可使用快信币参与《红包大风暴》活动版块赢取红包，|9下页" encoding="gb2312"/>
+        <var name="$msg202" type="string" size=""
+             default="当用户获得的红包累计10元以上，即可成功兑换为话费，每人每月最高限兑30元，10元起兑，活动过程中用户可随时查看自己获赠话费。|9下页" encoding="gb2312"/>
+        <var name="$msg203" type="string" size="" default="所有话费将以10的整数倍形式兑现，不足10元及零头忽略不计。中奖用户将在次月内以话费充值的方式统一进行兑奖。|00返回"
+             encoding="gb2312"/>
+
+
+        <var name="$msg10" type="string" size="" default="1话费查询|2活动说明" encoding="gb2312"/>
+        <var name="$msg12" type="string" size=""
+             default="当月首次登录快信100营业厅，或直接拨打**100*10086#，或直接通过活动菜单进行话费余额查询，即可获得一个以H开头的抽奖号码，|9下页" encoding="gb2312"/>
+        <var name="$msg13" type="string" size=""
+             default="凭该抽奖号码可参与当月平板电脑大奖抽奖。活动以月为周期，每月抽奖结果将在快信100平台公示，并下发短信中奖通知，中奖用户将在次月底前统一进行兑奖。00返回" encoding="gb2312"/>
+
+        <var name="$msggz1" type="string" size=""
+             default="本次活动分为四个板块，分别为《趣味智答》《惊喜查话费》《登陆攒金币》《红包大风暴》。《趣味智答》用户每月可参加一次该活动，届时用户|9下页" encoding="gb2312"/>
+        <var name="$msggz2" type="string" size=""
+             default="进入《趣味智答》活动页面将会随机呈现一道趣味数字问答题，用户按照题目回答出正确的数字答案，将会随机获得一份红包。用户可以继续参与|9下页" encoding="gb2312"/>
+        <var name="$msggz3" type="string" size=""
+             default="《红包大风暴》赢取更多红包，用来兑换话费。《惊喜查话费》用户当月通过拨打**100#首次登录快信营业厅通过活动菜单进行话费查询|9下页" encoding="gb2312"/>
+        <var name="$msggz4" type="string" size=""
+             default="或拨打**100*10086#，即可参与当月平板电脑大奖的抽奖。《登陆攒金币》用户每日拨打**100#登陆快信100，即可获得100快信币，|9下页" encoding="gb2312"/>
+        <var name="$msggz5" type="string" size="" default="用户可使用快信币参与《红包大风暴》活动版块抽红包，当用户获得的红包累计达到10元以上，即可成功兑换为话费。|9下页"
+             encoding="gb2312"/>
+        <!--var name="$msggz6" type="string" size="" default="每月最高限兑总额30元，10元起兑。截至16年10月1日0时，未兑换的话费数据将全部清零。|9下页" encoding="gb2312"/-->
+        <var name="$msggz6" type="string" size=""
+             default="《红包大风暴》该版块为抽奖赢话费活动，用户进入该版块可参与抢红包活动，系统将按照用户的换取次数以及参与换取次序得到相应红包|9下页" encoding="gb2312"/>
+        <var name="$msggz7" type="string" size=""
+             default="所获得的快信币可用于抽取红包，获得的红包将累计到活动的总红包中。当用户获得的红包累计达到10元以上，即可成功兑换为话费，|9下页" encoding="gb2312"/>
+        <var name="$msggz8" type="string" size="" default="每人每月最高限兑30元，10元起兑，活动过程中用户可随时查看自己的获赠话费，包月用户获得的快信币可累计。|00返回"
+             encoding="gb2312"/>
+
+
+        <var name="$msg501" type="string" size="" default="请选择您要兑换的手机话费：|1兑换10元|2兑换20元|3兑换30元|00返回" encoding="gb2312"/>
+        <!--var name="$msg502" type="string" size="" default="很抱歉！您已经兑换，请下个月再继续兑换，请重新选择或通过参与《幸运大轮盘》赢更多话费。|1《幸运大轮盘》|00返回" encoding="gb2312"/-->
+        <var name="$msg504" type="string" size="" default="很抱歉！您要兑换的红包金额不足，请重新选择或通过参与《红包大风暴》赢更多红包。|1《红包大风暴》|00返回"
+             encoding="gb2312"/>
+
+        <var name="$msglpgz1" type="string" size=""
+             default="《红包大风暴》版块为抽奖赢话费活动，用户进入该版块可用拨打**100#活动获得的快信币参与红包大风暴活动，每参与一次刮刮乐活动扣除4积分，|9下页" encoding="gb2312"/>
+        <var name="$msglpgz2" type="string" size=""
+             default="系统将按照用户所获得的抽奖次数以及参与抽奖的次序返回相应提示，当返回提示中奖时，即有机会获得抽奖奖励有5快信币、10快信币、50快信币，|9下页" encoding="gb2312"/>
+        <var name="$msglpgz3" type="string" size=""
+             default="或0.5元红包、1元红包、2元红包、5元红包、10元红包，该版块所获得的快信币可用于继续抽奖，获得的红包将累计到活动的总红包中。|9下页" encoding="gb2312"/>
+        <!--var name="$msglpgz3" type="string" size="" default="该活动周期为2016年7月1日0时至2016年10月1日0时，当用户获得的话费每累计达到10元以上，|9下页" encoding="gb2312"/-->
+        <var name="$msglpgz4" type="string" size=""
+             default="该活动周期为2017年7月1日0时——2017年9月30日24时，当用户获得的红包每累计达到10元以上，即可成功兑换为等值话费，9下页" encoding="gb2312"/>
+        <var name="$msglpgz5" type="string" size="" default="同一号码每月最高限兑总额30元，10元起兑，当月兑换后，用户可通过活动菜单随时查询剩余话费，未兑换的话费|00返回"
+             encoding="gb2312"/>
+        <var name="$msglpgz6" type="string" size="" default="将保留到2017年9月30日24时。中奖用户将在次月内以话费充值的方式统一进行兑奖。|00返回"
+             encoding="gb2312"/>
+
+        <var name="$msgdbqbgz01" type="string" size=""
+             default="《趣味智答》至2017年9月30日24时结束，快信用户每月可参加一次该活动，用户进入《趣味智答》活动页面将会随机呈现一道趣味数字问答题,|9下页" encoding="gb2312"/>
+        <var name="$msgdbqbgz02" type="string" size=""
+             default="用户按照题目回答出正确的数字答案，将会获得随机红包，中奖几率百分百。用户可以继续参与《红包大风暴》赢取更多红包，用来兑换话费。|00返回" encoding="gb2312"/>
+
+        <!--var name="$msgdbqb01" type="string" size="256" default="幸运星您好，如果您已寻找到宝藏代码，赶紧输入代码领取豪礼吧，数量有限哦！（直接输入数字代码并点击发送）|00返回" encoding="gb2312"/-->
+        <var name="$msgdbqb1701" type="string" size="256" default="一根绳子对折，再对折，再第三次对折，然后从中间剪断，共剪成多少段？(答案填写数字)|00返回"
+             encoding="gb2312"/>
+        <var name="$msgdbqb1702" type="string" size="256" default="公园举办展览会，王老师带着15个男生，12个女生来参观，王老师应该买几张票？(答案填写数字)|00返回"
+             encoding="gb2312"/>
+        <var name="$msgdbqb1703" type="string" size="256"
+             default="一本书共100页，小明第一天看了1/5，第二天看了剩下的1/4，剩下的第三天看完，第三天看了多少页？(答案填写数字)|00返回" encoding="gb2312"/>
+        <var name="$msgdbqb1704" type="string" size="256"
+             default="小赵、小王、小李和小陈四人，其中每三个人的岁数之和分别为65、68、62、75其中年龄最小的是多少岁?(答案填写数字)|00返回" encoding="gb2312"/>
+
+        <var name="$msgdbqb1705" type="string" size="256" default="一个房子4个角，一个角有一只猫，每只猫前面有4只猫，请问房里共有几只猫？|00返回"
+             encoding="gb2312"/>
+        <var name="$msgdbqb1706" type="string" size="256" default="公园的路旁有一排树，每棵树之间相隔3米，请问第一棵树和第六棵树之间相隔多少米？|00返回"
+             encoding="gb2312"/>
+
+        <var name="$msgdbqb02" type="string" size="256" default="咦，我的电脑在哪？嗷，找到了，在桌面。恭喜您获得2元红包|00返回" encoding="gb2312"/>
+        <var name="$msgdbqb03" type="string" size="256" default="黑夜给了我黑色的鼠标，我却用它游戏到天明。恭喜您获得3元红包|00返回"
+             encoding="gb2312"/>
+        <var name="$msgdbqb04" type="string" size="256" default="第八套广播体操，我练了三年了，什么时候能打通任督二脉啊。恭喜您获得5元红包|00返回"
+             encoding="gb2312"/>
+
+        <var name="$msgkxb01" type="string" size="256"
+             default="对不起，您的快信币余额不足，无法继续换取红包，明日再来继续参与吧。快信用户每日第一次拨打**100#登录快信100，即可获得100快信币。|00返回" encoding="gb2312"/>
+
+        <var name="$msgdbqb05" type="string" size="256" default="蓝瘦，香菇！您为什么没有答对，蓝瘦，香菇！|00返回" encoding="gb2312"/>
+
+        <var name="$msgdbqb06" type="string" size="256"
+             default="亲爱的用户，您的号码本月已参与过“趣味智答”活动，该活动单号码每月只能参与一次，快去参加其他活动赢取红包吧。|00返回" encoding="gb2312"/>
+
+        <var name="$msgydh" type="string" size="256" default="亲爱的用户，本月话费已全部兑换完毕，欢迎下期活动继续参与。|00返回" encoding="gb2312"/>
+
+        <var name="$freecharge" type="integer" default="1"/>
+
+        <!--夺宝奇兵3个月兑换码-->
+        <var name="$keydb1" type="string" size="" default="9"/>
+        <var name="$keydb2" type="string" size="" default="28"/>
+        <var name="$keydb3" type="string" size="" default="60"/>
+        <var name="$keydb4" type="string" size="" default="15"/>
+        <var name="$keydb5" type="string" size="" default="5"/>
+        <var name="$keydb6" type="string" size="" default="15"/>
+        <!--夺宝用户题目记录key-->
+        <var name="$msgdbqbkey" type="string" size="" default="DBKEYS"/>
+        <!--话费模块代理-->
+        <var name="$proxyid" type="string" size="" default="proxysmp"/>
+        <var name="$targetid" type="string" size="" default="ahnewhf"/>
+        <!--短信下发ip，port-->
+
+        <!--hfmsg为透传给代理的方式，用来获取话费信息，内容为YECX固定-->
+        <var name="$hfmsg" type="string" size="" default="YECX"/>
+        <var name="$msgtail" type="string" size="" default="|00返回" encoding="gb2312"/>
+
+
+    </global>
+
+    <local>
+        <!--conn-->
+        <var name="$st" type="string" size="64" default=""/>
+        <var name="$sc" type="string" size="64" default=""/>
+        <var name="$msg" type="string" size="256" default=""/>
+        <var name="$ms" type="string" size="20" default=""/>
+        <var name="$oa" type="string" size="64" default=""/>
+        <!--var name="$phone" type="string" size="20" default="18255164404"/-->
+        <!--结果参数-->
+        <var name="$rs" type="integer" default=""/>
+        <var name="$keylpllmm" type="string" size="64" default=""/><!-- 轮盘赠送话费新key -->
+
+        <var name="$keydbqb" type="string" size="64" default=""/><!-- 夺宝奇兵key -->
+
+        <var name="$ydhje" type="string" size="64" default="YDHJE"/><!--每月已兑换话费-->
+        <var name="$cxydhed" type="integer" default=""/>
+        <var name="$ydhed" type="integer" default=""/>
+        <var name="$ydh" type="string" size="32" default=""/>
+        <var name="$integral" type="integer" default=""/>
+        <var name="$integral10" type="integer" default="10"/>
+        <var name="$value100" type="integer" default="10"/>
+        <var name="$newvalue" type="integer" default=""/>
+        <var name="$newvaluedb" type="integer" default=""/>
+        <var name="$newvaluedb1" type="integer" default=""/>
+        <var name="$newvaluedb2" type="integer" default=""/>
+        <var name="$newvalue1" type="integer" default=""/>
+        <var name="$newvalue2" type="integer" default=""/>
+        <var name="$newvalue3" type="integer" default=""/>
+        <var name="$inttmp1" type="integer" default=""/>
+        <var name="$inttmp2" type="integer" default=""/>
+        <!--判断转轮盘总次数是否以00结尾-->
+
+
+        <var name="$ydhmmed" type="integer" default=""/>
+        <var name="$ydhmmed1" type="integer" default=""/>
+        <var name="$valueprizey" type="integer" default=""/>
+        <var name="$valueprize" type="integer" default=""/>
+        <!--var name="$valueuser" type="integer" default=""/-->
+        <var name="$valueall" type="integer" default=""/>
+        <var name="$valueall1" type="string" size="256" default=""/>
+        <var name="$valueall2" type="string" size="256" default=""/>
+        <var name="$valuealldb" type="integer" default=""/><!--夺宝总次数-->
+        <var name="$valuealldb1" type="string" size="256" default=""/>
+        <var name="$valuealldb2" type="string" size="256" default=""/>
+
+        <!--取余后的总转数长度-->
+        <var name="$length" type="integer" default=""/>
+        <!--code2的长度-->
+        <var name="$len" type="integer" default=""/>
+        <!--转轮盘总次数取余后，取的最后一位数-->
+        <var name="$int1" type="integer" default=""/>
+
+        <var name="$intdb1" type="integer" default=""/>
+        <var name="$intdb2" type="integer" default=""/><!--夺宝次数取模用-->
+
+        <var name="$kxb1" type="integer" default=""/><!--记录整型快信币总量是否大于5-->
+        <var name="$kxb" type="integer" default=""/><!--记录整型快信币-->
+        <var name="$kxb100" type="integer" default="100"/>!--增加100快信币-->
+        <var name="$kxb5" type="integer" default="4"/>!--减少4快信币-->
+
+        <var name="$index" type="integer" default=""/>
+        <var name="$ret" type="integer" default=""/>
+        <!--var name="$ret1" type="integer" default=""/-->
+        <var name="$zdjj" type="integer" default=""/><!--砸蛋奖金-->
+        <var name="$zdjjsj" type="integer" default=""/><!--砸蛋奖金数据-->
+        <var name="$zdjjdh" type="integer" default=""/><!--砸蛋奖金兑换-->
+        <var name="$zdzjok" type="string" size="20" default=""/><!--砸蛋金额是否超过-->
+        <var name="$keyzdjjday" type="string" size="32" default="LPJJDAY"/><!-- 记录砸蛋话费券每日 -->
+        <var name="$keyzdjj" type="string" size="64" default="LPJJ"/><!--砸蛋话费券，与YYYYMM配套使用-->
+
+        <var name="$keytmp" type="string" size="32" default=""/>
+        <var name="$keytmp1" type="string" size="32" default=""/>
+        <var name="$keydbmm" type="string" size="64" default=""/><!-- 夺宝中奖每月上行key-->
+        <var name="$keydbmm1" type="string" size="64" default="DBCY"/><!-- 夺宝每月参与上行key-->
+        <var name="$zdjr" type="integer" default="0"/>
+        <var name="$zdjrstr" type="string" size="64" default=""/>
+        <var name="$dbjr" type="integer" default="0"/>
+        <var name="$kxjr" type="integer" default="0"/>
+        <var name="$kxjr1" type="string" size="32" default=""/>
+        <var name="$userzdtmp" type="integer" default="0"/>
+        <var name="$timestrday" type="string" size="32" default=""/>
+        <var name="$timestrsfm" type="string" size="64" default=""/>
+        <var name="$no" type="integer" default="0"/>
+        <var name="$append" type="string" size="32" default=""/>
+        <!--var name="$str1" type="string" size="32" default=""/-->
+        <var name="$si3" type="integer" default=""/>
+        <var name="$sidb3" type="integer" default=""/>
+        <var name="$lp5" type="string" size="32" default="LP5YJ"/>
+        <var name="$lp5jj" type="integer" default="5"/>
+
+
+        <var name="$chargecode" type="string" size="20" default=""/>
+        <var name="$statusbuf" type="string" size="64" default=""/>
+        <var name="$ip" type="string" size="32" default=""/>
+        <var name="$result" type="string" size="64" default=""/>
+        <!--转轮盘总次数取余后，取的最后一位数的字串-->
+        <var name="$str2" type="string" size="64" default=""/>
+        <var name="$strdb2" type="string" size="64" default=""/>
+
+
+        <var name="$buf1" type="string" size="64" default=""/>
+        <var name="$nameprize" type="string" size="64" default=""/>
+        <var name="$nameprizekx" type="string" size="64" default="k"/>
+
+        <var name="$timestr" type="string" size="64" default=""/>
+        <var name="$timestrmm" type="string" size="64" default=""/>
+
+        <var name="$value" type="integer" default="0"/>
+        <var name="$value2" type="integer" default="0"/>
+        <var name="$value3" type="integer" default="0"/>
+        <var name="$value10" type="integer" default="0"/>
+        <var name="$value1" type="integer" default="0"/>
+        <var name="$bufcj" type="string" size="128" default=""/>
+        <var name="$msg_len" type="integer" default="0"/>
+
+
+        <var name="$code1" type="string" size="32" default=""/>
+        <var name="$code2" type="string" size="32" default=""/>
+
+        <!--下发话费查询信息-->
+        <var name="$message1" type="string" size="256" default=""/>
+        <var name="$message2" type="string" size="256" default=""/>
+        <var name="$message3" type="string" size="256" default=""/>
+
+
+        <var name="$msg11" type="string" size="256"
+             default="感谢参与“夏日特惠风暴季”活动，您本次获得抽奖号码AAAA，请妥善保存并关注次月开奖公告。想了解更多活动详情请拨打**100#" encoding="gb2312"/>
+
+        <var name="$msg9" type="string" size="256" default="感谢参与“夏日特惠风暴季”活动，您在《登陆有好礼》活动版块获得的100快信币。想了解更多活动详情请拨打**100#"
+             encoding="gb2312"/>
+
+        <!--var name="$msg204" type="string" size="256" default="您在《登陆有好礼》活动版块获得的话费为AAAA元，您目前剩余话费兑换金为BBBB元|1话费兑换|00返回" encoding="gb2312"/-->
+        <var name="$msg204" type="string" size="256" default="您在本季度活动中累计所获得的话费兑换金为AAAA元，快信币余额为BBBB币|1话费兑换|00返回"
+             encoding="gb2312"/>
+
+
+        <!--var name="$msg300" type="string" size="256" default="6得飞起啊，恭喜您抽得乐透大礼包，奖励您BBBB元手机话费兑换金，可用于兑换话费。乐透摇起来，手机话费奖不停！|1乐透摇起来|00返回" encoding="gb2312"/-->
+        <!--var name="$msg303" type="string" size="256" default="66666，恭喜您抽得乐透幸运奖，奖励您BBBB快信币，可用于继续摇奖。乐透摇起来，手机话费奖不停！|1乐透摇起来|00返回" encoding="gb2312"/-->
+        <var name="$msg300" type="string" size="256" default="幸运之星！恭喜您开到1元红包啦！|1继续抽红包|00返回" encoding="gb2312"/>
+        <var name="$msg3001" type="string" size="256" default="幸运之星！恭喜您开到2元红包啦！|1继续抽红包|00返回" encoding="gb2312"/>
+        <var name="$msg3002" type="string" size="256" default="幸运之星！恭喜您开到5元红包啦！|1继续抽红包|00返回" encoding="gb2312"/>
+
+        <var name="$msg303" type="string" size="256" default="幸运之星！恭喜您开到5枚快信币！|1继续抽红包|00返回" encoding="gb2312"/>
+        <var name="$msg3031" type="string" size="256" default="幸运之星！恭喜您开到20枚快信币！|1继续抽红包|00返回" encoding="gb2312"/>
+        <var name="$msg3032" type="string" size="256" default="幸运之星！恭喜您开到50枚快信币！|1继续抽红包|00返回" encoding="gb2312"/>
+
+        <var name="$msg301" type="string" size="256" default="风太大，红包里竟空无一物，别灰心，大奖在后面，再来开一个吧！|1继续抽红包|00返回"
+             encoding="gb2312"/>
+
+        <!--var name="$msg301" type="string" size="256" default="很遗憾，您本次获得幸运数字AAAA，不是100的整数倍，没有手机话费奖励哦！不服气？那就继续转动轮盘过招吧！|1轮盘转转转|00返回" encoding="gb2312"/-->
+
+        <var name="$msg302" type="string" size="256" default="您在本季度活动中累计所获得的话费兑换金为AAAA元，快信币余额为BBBB币|1话费兑换|00返回"
+             encoding="gb2312"/>
+
+        <var name="$msg500" type="string" size="256" default="您好！您在《红包大风暴》活动中目前剩余话费兑换金为AAAA元|00返回" encoding="gb2312"/>
+        <var name="$msg503" type="string" size="256" default="您已成功兑换AAAA元话费，下月初将以话费充值的形式为您兑奖，详询10086|1剩余话费查询|00返回"
+             encoding="gb2312"/>
+        <var name="$msg505" type="string" size="256" default="您本月话费兑换额度已达上限30元！期待您继续参与下月活动！详情见活动说明|00返回"
+             encoding="gb2312"/>
+        <var name="$msg506" type="string" size="256" default="您选择兑换金额超过本月最高兑换金额30元，请返回重新选择兑换金额，详询10086|1剩余话费查询|00返回"
+             encoding="gb2312"/>
+
+
+        <var name="$port" type="string" size="32" default="15000"/>
+
+        <!--var name="$sendip" type="string" size="32" default="168.5.51.101"/-->
+        <var name="$sendip" type="string" size="32" default="221.130.165.44"/>
+        <var name="$sendport" type="string" size="32" default="7552"/>
+        <var name="$sendoa" type="string" size="32" default="10658100"/>
+
+        <var name="$buf" type="string" size="256" default=""/>
+        <var name="$buf2" type="string" size="256" default=""/>
+
+
+    </local>
+
+    <import>
+        <plugin name="libstr.so"/>
+        <plugin name="libscriptproductuserdata.so"/>
+        <plugin name="libscriptconnector.so"/>
+        <plugin name="libywdata.so"/>
+        <plugin name="libstd.so"/>
+        <plugin name="libywgeneral.so"/>
+        <plugin name="libscriptproductchargecode.so"/>
+        <plugin name="libproxy.so"/>
+        <plugin name="libsmsorder.so"/>
+    </import>
+
+    <init>
+        <ywdata:load ywid="$_BID" rs="$rsglobal"/>
+        <ywdata:load ywid="$_ywbidtmp" rs="$rsglobal"/>
+
+    </init>
+    <destroy>
+        <ywdata:unload ywid="$_BID" rs="$rsglobal"/>
+        <ywdata:unload ywid="$_ywbidtmp" rs="$rsglobal"/>
+
+    </destroy>
+
+
+    <service>
+        <!--读取消息-->
+        <conn:getreq rid="$_RID" servicetype="$st" servicecode="$sc" message="$msg" msisdn="$ms" serviceaddr="$oa"
+                     ip="$ip"/>
+
+
+        <str:toupper src="$msg"/>
+        <!--获取计费代码-->
+        <feecode:get bid="$_BID" charge="$freecharge" buf="$chargecode"/>
+
+
+        <!--用户点话费-->
+        <equal first="$msg" second="AHBS YECX">
+            <str:copy dest="$statusbuf" source="100"/>
+            <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+            <str:copy dest="$msg" source="1"/>
+            <str:copy dest="$chargecode" source="104004911"/>
+            <str:copy dest="$code2" source="1"/>
+            <call function="CX"/>
+            <return/>
+        </equal>
+
+
+        <ywg:nowtimestr formatstr="yyyymmdd" timestr="$timestrday"/>
+        <ywg:nowtimestr formatstr="yyyymm" timestr="$timestrmm"/>
+        <ywg:nowtimestr formatstr="yyyy-mm-dd hh:mi:ss" timestr="$timestrsfm"/>
+
+        <switch select="$timestrmm">
+            <!--测试用的6月份-->
+            <case value="201706">
+                <ywg:periodindex begintime="2017-06-1 00:00:00" perioddays="$perioddays" seperatetime="$seperatetime"
+                                 checkedtime="$timestrsfm" rs="$rs" index="$index"/>
+                <break/>
+            </case>
+
+            <!--7月份-->
+            <case value="201707">
+                <ywg:periodindex begintime="2017-07-01 00:00:00" perioddays="$perioddays" seperatetime="$seperatetime"
+                                 checkedtime="$timestrsfm" rs="$rs" index="$index"/>
+                <break/>
+            </case>
+
+            <!--8月份-->
+            <case value="201708">
+                <ywg:periodindex begintime="2017-08-01 00:00:00" perioddays="$perioddays" seperatetime="$seperatetime"
+                                 checkedtime="$timestrsfm" rs="$rs" index="$index"/>
+                <break/>
+            </case>
+
+            <!--9月份-->
+            <case value="201709">
+                <ywg:periodindex begintime="2017-09-01 00:00:00" perioddays="$perioddays" seperatetime="$seperatetime"
+                                 checkedtime="$timestrsfm" rs="$rs" index="$index"/>
+                <break/>
+            </case>
+        </switch>
+
+
+        <!--====================================已送出未兑换的金额===========================================-->
+        <!--====================当天最大兑换金额660*当月第几天，得出当前奖金池zdjj========================-->
+        <!--砸蛋当前应可兑总奖金数，以角为单位-->
+        <std:mul first="$pldayjjbz" second="$index" result="$zdjj"/>
+
+
+        <!--================根据key：LPJJyyyymm，获取业务整型数据zdjjsj======================-->
+        <!--砸蛋获取当月已兑奖金额，以角为单位-->
+        <str:cat src="$keyzdjj" end="$timestrmm"/>
+        <ywdata:getint ywid="$_BID" key="$keyzdjj" rs="$rs" value="$zdjjsj"/>
+
+        <!--================判断当前奖金池是否大于，当月已兑换奖金额，=====================-->
+        <!--判断当日可兑奖金额，以角为单位-->
+        <greaterthan first="$zdjj" second="$zdjjsj">
+            <!--大于可以进行转轮盘-->
+            <str:copy dest="$zdzjok" source="YES"/>
+            <!--奖金池-已兑换奖金，算出当天剩余可兑换奖金-->
+            <std:sub first="$zdjj" second="$zdjjsj" result="$zdjjdh"/>
+        </greaterthan>
+
+        <!--判断当前奖金池是否小于，当月已兑换奖金额-->
+        <lessequal first="$zdjj" second="$zdjjsj">
+            <!--小于不可以进行转轮盘-->
+            <str:copy dest="$zdzjok" source="NO"/>
+        </lessequal>
+        <!--===============================================================================-->
+
+
+        <!--用户代码拆分-->
+        <ywg:codesplit scode="$msg" num="$fgnum" rs="$rs" code1="$code1" code2="$code2"/>
+
+
+        <!--没有2级代码-->
+        <equal first="$code2" second="">
+            <switch select="$code1">
+                <!--惊喜查话费-->
+                <case value="$ywcode1">
+                    <!--设置用户状态-->
+                    <str:copy dest="$statusbuf" source="100"/>
+                    <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                    <conn:setresp rid="$_RID" Message="$msg10" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                  ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                    <return/>
+                    <break/>
+                </case>
+
+                <!--登陆有好礼规则-->
+                <case value="$ywcode20">
+                    <!--设置用户状态-->
+                    <str:copy dest="$statusbuf" source="200"/>
+                    <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                    <call function="DLHLHDGZ"/>
+                    <return/>
+                    <break/>
+
+                </case>
+
+                <!--登陆有好礼流量查询-->
+                <case value="$ywcode21">
+                    <!--设置用户状态-->
+                    <str:copy dest="$statusbuf" source="201"/>
+                    <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                    <call function="DLHLLLCX"/>
+                    <return/>
+                    <break/>
+                </case>
+
+                <!--登陆有好礼流量增加-->
+                <case value="$ywcode22">
+                    <!--设置用户状态-->
+                    <str:copy dest="$statusbuf" source="202"/>
+                    <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                    <call function="DLHLLLZJ"/>
+                    <return/>
+                    <break/>
+                </case>
+
+
+                <!--轮盘活动-->
+                <case value="$ywcode30">
+                    <!--设置用户状态-->
+                    <str:copy dest="$statusbuf" source="300"/>
+                    <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                    <call function="LP"/>
+                    <return/>
+                    <break/>
+                </case>
+
+                <!--轮盘规则-->
+                <case value="$ywcode31">
+                    <!--设置用户状态-->
+                    <str:copy dest="$statusbuf" source="301"/>
+                    <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                    <call function="LPGZ"/>
+                    <return/>
+                    <break/>
+                </case>
+
+
+                <!--轮盘查询-->
+                <case value="$ywcode32">
+                    <!--设置用户状态-->
+                    <str:copy dest="$statusbuf" source="302"/>
+                    <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                    <!--call function="LPCX"/-->
+                    <call function="DLHLLLCX"/>
+                    <return/>
+                    <break/>
+                </case>
+
+
+                <!--活动规则-->
+                <case value="$ywcode4">
+                    <!--设置用户状态-->
+                    <str:copy dest="$statusbuf" source="400"/>
+                    <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                    <call function="GZ"/>
+                    <return/>
+                    <break/>
+                </case>
+
+
+                <!--流量查询-->
+                <case value="$ywcode50">
+                    <!--设置用户状态-->
+                    <str:copy dest="$statusbuf" source="500"/>
+                    <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                    <call function="LLCX"/>
+                    <return/>
+                    <break/>
+                </case>
+
+
+                <!--流量兑换-->
+                <case value="$ywcode51">
+                    <!--设置用户状态-->
+                    <str:copy dest="$statusbuf" source="502"/>
+                    <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                    <call function="LLTS"/>
+                    <return/>
+                    <break/>
+                </case>
+
+
+                <!--夺宝奇兵规则-->
+                <case value="$ywcode53">
+                    <!--设置用户状态-->
+                    <str:copy dest="$statusbuf" source="505"/>
+                    <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                    <call function="DBQBGZ"/>
+                    <return/>
+                    <break/>
+                </case>
+
+
+                <!--夺宝奇兵-->
+                <case value="$ywcode52">
+                    <!--设置用户状态-->
+                    <str:copy dest="$statusbuf" source="504"/>
+                    <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                    <call function="DBQB"/>
+                    <return/>
+                    <break/>
+                </case>
+
+
+                <conn:setresp rid="$_RID" Message="$code1" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                              CurrentIndex="1" port="$port"/>
+                <return/>
+            </switch>
+            <return/>
+        </equal>
+
+
+        <!--获取用户状态-->
+        <str:copy dest="$statusbuf" source=""/>
+        <userdata:getv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+
+
+        <switch select="$statusbuf">
+            <!--话费查询-->
+            <case value="100">
+                <call function="CX"/>
+                <return/>
+                <break/>
+            </case>
+
+            <!--登陆好礼活动规则-->
+            <case value="200">
+                <call function="DLHLHDGZ"/>
+                <return/>
+                <break/>
+            </case>
+
+
+            <!--登陆有好礼流量查询-->
+            <case value="201">
+                <!--流量兑换提示-->
+                <equal first="$code2" second="1">
+                    <call function="LLTS"/>
+                    <return/>
+                    <break/>
+                </equal>
+
+                <call function="DLHLLLCX"/>
+                <return/>
+                <break/>
+            </case>
+
+            <!--登陆有好礼流量增加-->
+            <case value="202">
+                <call function="DLHLLLZJ"/>
+                <return/>
+                <break/>
+            </case>
+
+            <!--轮盘活动-->
+            <case value="300">
+                <call function="LP"/>
+                <return/>
+                <break/>
+            </case>
+
+            <!--轮盘规则-->
+            <case value="301">
+                <call function="LPGZ"/>
+                <return/>
+                <break/>
+            </case>
+
+            <!--轮盘查询-->
+            <case value="302">
+                <!--流量兑换提示-->
+                <equal first="$code2" second="1">
+                    <call function="LLTS"/>
+                    <return/>
+                    <break/>
+                </equal>
+
+                <call function="LPCX"/>
+                <return/>
+                <break/>
+            </case>
+
+            <!--活动规则-->
+            <case value="400">
+                <call function="GZ"/>
+                <return/>
+                <break/>
+            </case>
+
+
+            <!--流量查询-->
+            <case value="500">
+                <!--流量兑换提示-->
+                <equal first="$code2" second="1">
+                    <call function="LLTS"/>
+                    <return/>
+                    <break/>
+                </equal>
+                <call function="LLCX"/>
+                <return/>
+                <break/>
+            </case>
+
+            <!--流量提示-->
+            <case value="501">
+                <switch select="$code2">
+                    <case value="1" value0="2" value1="3">
+                        <call function="LLDH"/>
+                        <return/>
+                        <break/>
+                    </case>
+                </switch>
+
+
+                <call function="LLTS"/>
+                <return/>
+                <break/>
+            </case>
+
+            <!--流量兑换-->
+            <case value="502">
+                <!--轮盘-->
+                <equal first="$code2" second="1">
+                    <call function="LP"/>
+                    <return/>
+                    <break/>
+                </equal>
+                <call function="LLDH"/>
+                <return/>
+                <break/>
+            </case>
+
+            <!--流量查询-->
+            <case value="503">
+                <call function="LLCX"/>
+                <return/>
+                <break/>
+            </case>
+
+            <!--夺宝奇兵-->
+            <case value="504">
+                <call function="DBQB"/>
+                <return/>
+                <break/>
+            </case>
+
+
+        </switch>
+
+
+    </service>
+    <functions>
+        <function id="DLHLHDGZ">
+            <conn:setresp rid="$_RID" Message="$msg200" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="4"
+                          CurrentIndex="1" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msg201" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="4"
+                          CurrentIndex="2" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msg202" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="4"
+                          CurrentIndex="3" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msg203" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="4"
+                          CurrentIndex="4" port="$port"/>
+            <return/>
+        </function>
+
+        <function id="DLHLLLCX">
+            <str:copy dest="$buf" source=""/>
+            <!--userdata:getv bid="$_BID" ms="$ms" key="$keylpllmm" buf="$buf" result="$rs"/-->
+            <str:copy dest="$buf" source=""/>
+            <userdata:getv bid="$_BID" ms="$ms" key="$keykxb" buf="$buf" result="$rs"/><!--获取用户当前快信币余额-->
+
+            <!--userdata:getv bid="$_BID" ms="$ms" key="$keydlll" buf="$buf" result="$rs"/>
+            <noequal first="$buf" second="">
+                <str:copy dest="$buf" source="2"/>
+            </noequal>
+            <equal first="$buf" second="">
+                <str:copy dest="$buf" source="0"/>
+            </equal-->
+            <str:replace src="$msg204" old="BBBB" new="$buf" value="$msg204"/>
+
+            <str:copy dest="$buf" source=""/>
+            <std:assign dest="$integral" source="0"/>
+            <userdata:geti bid="$_BID" ms="$ms" integral="$integral" result="$rs"/>
+            <std:assign dest="$inttmp1" source="0"/>
+            <std:assign dest="$inttmp2" source="0"/>
+            <std:div first="$integral" second="$integral10" result="$inttmp1"/>
+            <std:mod first="$integral" second="$integral10" result="$inttmp2"/>
+            <!--无小数点-->
+            <equal first="$inttmp2" second="0">
+                <str:copy dest="$buf" source=""/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$inttmp1"/>
+                <str:replace src="$msg204" old="AAAA" new="$buf" value="$msg204"/>
+            </equal>
+            <!--有小数点-->
+            <noequal first="$inttmp2" second="0">
+                <str:copy dest="$buf" source=""/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$inttmp1"/>
+                <str:cat src="$buf" end="."/>
+                <str:copy dest="$buf1" source=""/>
+                <std:sprint strvalue="$buf1" fmt="%lld" p0="$inttmp2"/>
+                <str:cat src="$buf" end="$buf1"/>
+                <str:replace src="$msg204" old="AAAA" new="$buf" value="$msg204"/>
+            </noequal>
+            <conn:setresp rid="$_RID" Message="$msg204" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                          CurrentIndex="1" port="$port"/>
+
+            <return/>
+        </function>
+
+        <function id="DLHLLLZJ">
+            <!--判断用户是否为订购用户，订购用户才可以赠送-->
+            <!--smsorder:smsquery ms="$ms" servid="$servidds" route="$routeds" ret="$ret" result="$result"/>
+            <noequal first="$ret" second="1">
+                <smsorder:smsquery ms="$ms" servid="$servid" route="$route" ret="$ret" result="$result"/>
+                <noequal first="$ret" second="1">
+                    <conn:setcode rid="$_RID" code="2"/>
+                    <return/>
+                </noequal>
+            </noequal-->
+
+
+            <!--判断用户是否首次登陆-->
+            <str:copy dest="$buf" source=""/>
+            <userdata:getv bid="$_BID" ms="$ms" key="$keysdl" buf="$buf" result="$rs"/>
+            <!--获取首次登陆是否是今天，是当天表示已经送了-->
+
+            <equal first="$buf" second="$timestrday">
+                <!--noequal  first="$ms" second="18255164404"-->
+                <conn:setcode rid="$_RID" code="3"/>
+                <return/>
+                <!--/noequal-->
+            </equal>
+            <!--不是当天，表示是当天首次登陆送100快信币-->
+            <noequal first="$buf" second="$timestrday">
+                <str:copy dest="$buf" source=""/>
+
+                <userdata:getv bid="$_BID" ms="$ms" key="$keykxb" buf="$buf" result="$rs"/><!--获取当前快信币余额-->
+                <equal first="$rs" second="0"><!--获取成功，在余额上增加100快信币-->
+                    <str:atoi src="$buf" result="$kxb"/>
+                    <std:add first="$kxb" second="$kxb100" result="$kxb"/>
+                    <std:sprint strvalue="$buf" fmt="%lld" p0="$kxb"/>
+                </equal>
+                <noequal first="$rs" second="0"><!--获取失败，用户首次拨打，增加100快信币-->
+                    <str:copy dest="$buf" source="100"/><!--送100快信币记录用户数据-->
+                </noequal>
+                <userdata:setv bid="$_BID" ms="$ms" key="$keykxb" buf="$buf" result="$rs"/><!--送100快信币记录用户数据-->
+
+                <userdata:setv bid="$_BID" ms="$ms" key="$keysdl" buf="$timestrday" result="$rs"/><!--记录当天日期，用于判断首次登陆-->
+                <!--std:assign dest="$value" source="100"/>
+                <userdata:inci bid="$_BID" ms="$ms" increase="$value" integral="$integral" result="$rs"/--><!--送2元话费增加用户积分-->
+
+                <conn:setresp rid="$_RID" Message="$msg9" ServiceAddr="$sendoa" ChargeCode="$chargecode"
+                              ContinueTotal="1" CurrentIndex="1" ip="$sendip" port="$sendport"/>
+                <!--continue-response/>
+                <conn:setcode rid="$_RID" code="4"/-->
+                <return/>
+            </noequal>
+        </function>
+
+        <function id="LP">
+            <!--===============s设置业务用户数据lp活动数据为300================-->
+            <str:copy dest="$statusbuf" source="300"/>
+            <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+
+            <!--设置该活动总上行次数，以月为单位，每次+1，valueall为当前总上行次数-->
+            <str:cat src="$keylpallcount" end="$timestrmm"/>
+            <std:assign dest="$value" source="1"/>
+            <ywdata:addint ywid="$_BID" key="$keylpallcount" value="$value" rs="$rs" newvalue="$newvalue"/>
+            <std:assign dest="$valueall" source="$newvalue"/>
+
+            <!--****检查是否有足够快信币****-->
+            <noequal first="$ms" second="18255164404">
+                <str:copy dest="$buf" source=""/>
+                <userdata:getv bid="$_BID" ms="$ms" key="$keykxb" buf="$buf" result="$rs"/><!--获取用户当前快信币余额-->
+                <str:atoi src="$buf" result="$kxb1"/>
+                <lessthan first="$kxb1" second="3"><!--快信币不够退出-->
+                    <conn:setresp rid="$_RID" Message="$msgkxb01" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                  ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                    <return/>
+                </lessthan>
+            </noequal>
+            <!--****检查是否有足够快信币****-->
+
+
+            <!--当日奖金已发完-->
+            <equal first="$zdzjok" second="NO">
+                <conn:setresp rid="$_RID" Message="$msgzd1" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                              CurrentIndex="1" port="$port"/>
+                <return/>
+            </equal>
+
+            <!--设置中奖key值-->
+            <str:copy dest="$keylpllmm" source="$timestrmm"/>
+            <str:cat src="$keylpllmm" end="LPLLMM"/>
+
+            <!--获取用户中奖金额-->
+            <str:copy dest="$buf" source=""/>
+            <std:assign dest="$value" source="0"/>
+            <userdata:getv bid="$_BID" ms="$ms" key="$keylpllmm" buf="$buf" result="$rs"/>
+            <str:atoi src="$buf" result="$value"/>
+            <!--当月该用户已达到可刮奖金额极限-->
+            <greaterequal first="$value" second="$lpgrmax">
+                <conn:setresp rid="$_RID" Message="$msgzd2" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                              CurrentIndex="1" port="$port"/>
+                <return/>
+            </greaterequal>
+
+            <!--****扣除4个快信币****-->
+            <noequal first="$ms" second="18255164404">
+                <str:copy dest="$buf" source=""/>
+                <userdata:getv bid="$_BID" ms="$ms" key="$keykxb" buf="$buf" result="$rs"/><!--获取用户当前快信币余额-->
+                <str:atoi src="$buf" result="$kxb"/>
+                <std:sub first="$kxb" second="$kxb5" result="$kxb"/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$kxb"/>
+                <userdata:setv bid="$_BID" ms="$ms" key="$keykxb" buf="$buf" result="$rs"/>
+            </noequal>
+            <!--****扣除4个快信币****-->
+
+            <!--将总数转换成字符串赋值给valueall1-->
+            <std:sprint strValue="$valueall1" fmt="%lld" p0="$valueall"/>
+            <!--判断转轮盘总次数是否为100的倍数，以0结尾就是10倍数-->
+            <str:endwith src="$valueall1" start="0" value="$valueprizey"/>
+            <!--是10倍数-->
+            <equal first="$valueprizey" second="1">
+
+
+                <!--总次数/10取余-->
+                <std:div first="$valueall" second="$value100" result="$valueprize"/>
+                <std:sprint strValue="$valueall2" fmt="%lld" p0="$valueprize"/>
+                <!--获取余的长度-->
+                <str:len src="$valueall2" len="$length"/>
+                <std:sub first="$length" second="1" result="$si3"/>
+                <!--获取余的最后一位数-->
+                <!--std:sprint strValue="$valueall3" fmt="%lld" p0="$si3"/-->
+                <str:sub src="$valueall2" start="$si3" len="1" sub="$str2"/>
+                <str:atoi src="$str2" result="$int1"/>
+                <!--如果总轮盘次数不为则中小奖-->
+                <!--noequal first="$valueall" second="100"-->
+                <!--根据最后一位数判断中奖金额-->
+                <switch select="$int1">
+                    <!--中5元话费-->
+                    <case value="9">
+                        <std:assign dest="$zdjr" source="50"/>
+                        <std:assign dest="$kxjr" source="0"/>
+                        <str:copy dest="$nameprize" source="5"/>
+                        <break/>
+                    </case>
+                    <!--中1元话费-->
+                    <case value="7">
+                        <std:assign dest="$zdjr" source="10"/>
+                        <std:assign dest="$kxjr" source="0"/>
+                        <str:copy dest="$nameprize" source="1"/>
+                        <break/>
+                    </case>
+                    <!--中2元话费-->
+                    <case value="8">
+                        <std:assign dest="$zdjr" source="20"/>
+                        <std:assign dest="$kxjr" source="0"/>
+                        <str:copy dest="$nameprize" source="2"/>
+                        <break/>
+                    </case>
+                    <!--中5个快信币-->
+                    <case value="1" value1="0">
+                        <std:assign dest="$zdjr" source="0"/>
+                        <std:assign dest="$kxjr" source="5"/>
+                        <str:copy dest="$nameprize" source="5"/>
+                        <break/>
+                    </case>
+                    <!--中20个快信币-->
+                    <case value="3" value1="2">
+                        <std:assign dest="$zdjr" source="0"/>
+                        <std:assign dest="$kxjr" source="20"/>
+                        <str:copy dest="$nameprize" source="20"/>
+                        <break/>
+                    </case>
+                    <!--中50个快信币-->
+                    <case value="5" value1="6" value2="4">
+                        <std:assign dest="$zdjr" source="0"/>
+                        <std:assign dest="$kxjr" source="50"/>
+                        <str:copy dest="$nameprize" source="50"/>
+                        <break/>
+                    </case>
+
+                </switch>
+
+                <!--/noequal-->
+
+                <!--轮盘兑换金大于1000元时中5元话费，每月一次-->
+                <!--greaterthan first="$zdjj" second="10000"-->
+                <!--设置当月送5元key-->
+                <!--str:cat src="$lp5" end="$timestrmm"/-->
+                <!--查询本月10元是否送出-->
+                <!--ywdata:getint ywid="$_BID" key="$lp5" rs="$rs" value="$value10"/-->
+                <!--获取失败即10元未发放，可以发放10元奖励-->
+                <!--equal first="$rs" second="0">
+                    <std:assign dest="$zdjr" source="50"/>
+                    <std:assign dest="$kxjr" source="0"/>
+                    <str:copy dest="$nameprize" source="5"/>
+                    <ywdata:setint ywid="$_BID" key="$lp5" value="$lp5jj" rs="$rs"/>
+                </equal>
+            </greaterthan-->
+
+                <!--按照中奖规则获取的金额大于当日可兑奖奖池，回复未中奖-->
+                <greaterthan first="$zdjr" second="$zdjjdh">
+                    <!--std:assign dest="$value1" source="-1"/>
+                    <std:rand first="1" second="99" result="$value"/>
+                    <std:mul first="$value" second="$value100" result="$newvalue"/>
+                    <std:rand first="1" second="99" result="$value"/>
+                    <std:add first="$value" second="$newvalue" result="$inttmp1"/>
+                    <str:copy dest="$buf" source=""/>
+                    <std:sprint strvalue="$buf" fmt="%lld" p0="$inttmp1" />
+                    <str:replace src="$msg301" old="AAAA" new="$buf" value="$msg301"/-->
+                    <conn:setresp rid="$_RID" Message="$msg301" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                  ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                    <return/>
+                </greaterthan>
+
+                <!--按照中奖规则获取的用户金额大于当月用户兑奖金额，回复未中奖-->
+                <std:assign dest="$userzdtmp" source="0"/>
+                <!--已获奖金额+当前获奖金额=userzdtmp-->
+                <std:add first="$value" second="$zdjr" result="$userzdtmp"/>
+
+                <!--大于用户可兑奖奖池-->
+                <greaterthan first="$userzdtmp" second="$lpgrmax">
+                    <!--给用户一个非10倍数的随机数-->
+                    <!--std:assign dest="$value1" source="-1"/>
+                    <std:rand first="1" second="99" result="$value"/>
+                    <std:mul first="$value" second="$value100" result="$newvalue"/>
+                    <std:rand first="1" second="99" result="$value"/>
+                    <std:add first="$value" second="$newvalue" result="$inttmp1"/>
+                    <str:copy dest="$buf" source=""/>
+                    <std:sprint strvalue="$buf" fmt="%lld" p0="$inttmp1" />
+                    <str:replace src="$msg301" old="AAAA" new="$buf" value="$msg301"/-->
+                    <conn:setresp rid="$_RID" Message="$msg301" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                  ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                    <return/>
+                </greaterthan>
+
+            </equal>
+
+            <equal first="$valueprizey" second="0">
+                <!--给用户一个非100倍数的随机数-->
+                <!--std:assign dest="$value1" source="-1"/>
+                <std:rand first="1" second="99" result="$value"/>
+                <std:mul first="$value" second="$value100" result="$newvalue"/>
+                <std:rand first="1" second="99" result="$value"/>
+                <std:add first="$value" second="$newvalue" result="$inttmp1"/>
+                <str:copy dest="$buf" source=""/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$inttmp1" />
+                <str:replace src="$msg301" old="AAAA" new="$buf" value="$msg301"/-->
+                <conn:setresp rid="$_RID" Message="$msg301" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                              CurrentIndex="1" port="$port"/>
+                <return/>
+            </equal>
+            <!--========================================以上情况均为砸蛋未中奖===================================-->
+            <noequal first="$zdjr" second="0">
+                <std:sprint strvalue="$zdjrstr" fmt="%lld" p0="$zdjr"/>
+                <ywdata:writedata ywid="$_BID" content="$ms" rs="$rs"/>
+                <ywdata:writedata ywid="$_BID" content="$zdjrstr" rs="$rs"/>
+                <ywdata:writedata ywid="$_BID" content="$nameprize" rs="$rs"/>
+                <ywdata:writedata ywid="$_BID" content="$ms" rs="$rs"/>
+
+                <!--=========================================上面将用户中奖情况写入ywdata2===========================-->
+
+                <!--=========================================下面设置用户累计中奖金额===========================-->
+                <!--可正常获奖-->
+                <!--设置用户已获奖key：yyyymmlp-->
+                <str:copy dest="$buf" source="0"/>
+                <str:copy dest="$keytmp" source="$timestrmm"/>
+                <str:cat src="$keytmp" end="lp"/>
+
+                <!--当前用户可兑奖金额转换为整型赋值给buf-->
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$userzdtmp"/>
+
+                <userdata:setv bid="$_BID" ms="$ms" key="$keytmp" buf="$buf" result="$rs"/>
+
+                <ywdata:descphoneadd ywid="$_BID" key="$keytmp" no="$no" value="$userzdtmp" phone="$ms" append="$append"
+                                     rs="$rs"/>
+
+
+                <!--置空buf如果获取不到用户信息buf就为空，获取用户轮盘中奖数据，将value置为0，将integral置为0，将buf转换为整数置为0-->
+                <str:copy dest="$buf" source=""/>
+                <userdata:getv bid="$_BID" ms="$ms" key="$keylpllmm" buf="$buf" result="$rs"/>
+
+                <std:assign dest="$value" source="0"/>
+                <std:assign dest="$integral" source="0"/>
+                <str:atoi src="$buf" result="$value"/>
+                <std:add first="$value" second="$zdjr" result="$integral"/><!--已获金额+当前获奖金额=intgral，单位角-->
+                <str:copy dest="$buf" source=""/><!--置空buf-->
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$integral"/><!--将中奖金额转换为字串赋值给buf-->
+                <userdata:setv bid="$_BID" ms="$ms" key="$keylpllmm" buf="$buf" result="$rs"/><!--设置用户轮盘中奖金额-->
+                <!--===========================================================================================-->
+
+                <!--=========================================下面设置当月和当日累计中奖金额===========================-->
+                <!--设置总已获奖奖池-->
+                <!--砸蛋获取当月已兑奖金额，以角为单位-->
+                <ywdata:addint ywid="$_BID" key="$keyzdjj" value="$zdjr" rs="$rs" newvalue="$value"/>
+
+
+                <!--设置当日奖池-->
+
+                <ywdata:addint ywid="$_BID" key="$keyzdjjday" value="$zdjr" rs="$rs" newvalue="$value"/>
+
+                <userdata:inci bid="$_BID" ms="$ms" increase="$zdjr" integral="$integral" result="$rs"/>
+
+                <!--方便用户兑奖-->
+                <str:copy dest="$buf" source="0"/>
+                <str:copy dest="$keytmp1" source="$timestrmm"/>
+                <str:cat src="$keytmp1" end="lpkdh"/>
+                <userdata:geti bid="$_BID" ms="$ms" integral="$integral" result="$rs"/>
+                <ywdata:descphoneadd ywid="$_BID" key="$keytmp1" no="$no" value="$integral" phone="$ms" append="$append"
+                                     rs="$rs"/>
+
+
+                <!--std:rand first="1" second="99" result="$value"/>
+                <std:mul first="$value" second="100" result="$newvalue"/>
+                <str:copy dest="$buf" source=""/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$newvalue"/>
+                <str:replace src="$msg300" old="AAAA" new="$buf" value="$msg300"/-->
+                <!--将msg300中的bbbb更换为nameprize，返回-->
+                <!--str:replace src="$msg300" old="BBBB" new="$nameprize" value="$msg300"/-->
+                <!--中1元-->
+                <equal first="$zdjr" second="10">
+                    <conn:setresp rid="$_RID" Message="$msg300" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                  ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                </equal>
+                <!--中2元-->
+                <equal first="$zdjr" second="20">
+                    <conn:setresp rid="$_RID" Message="$msg3001" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                  ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                </equal>
+                <!--中5元-->
+                <equal first="$zdjr" second="50">
+                    <conn:setresp rid="$_RID" Message="$msg3002" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                  ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                </equal>
+            </noequal>
+
+            <noequal first="$kxjr" second="0">
+                <!--std:rand first="1" second="99" result="$value"/>
+                <std:mul first="$value" second="100" result="$newvalue"/>
+                <str:copy dest="$buf" source=""/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$newvalue"/>
+                <str:replace src="$msg303" old="AAAA" new="$buf" value="$msg303"/-->
+                <!--将msg300中的bbbb更换为nameprize，返回-->
+                <!--str:replace src="$msg303" old="BBBB" new="$nameprize" value="$msg303"/-->
+
+                <str:cat src="$nameprize" end="$nameprizekx"/>
+                <std:sprint strvalue="$kxjr1" fmt="%lld" p0="$kxjr"/>
+                <ywdata:writedata ywid="$_BID" content="$ms" rs="$rs"/>
+                <ywdata:writedata ywid="$_BID" content="$kxjr1" rs="$rs"/>
+                <ywdata:writedata ywid="$_BID" content="$nameprize" rs="$rs"/>
+                <ywdata:writedata ywid="$_BID" content="$ms" rs="$rs"/>
+
+                <!--=========================================上面将用户中奖情况写入ywdata2===========================-->
+
+                <!--****先增加中得的快信币****-->
+                <str:copy dest="$buf" source=""/>
+                <userdata:getv bid="$_BID" ms="$ms" key="$keykxb" buf="$buf" result="$rs"/><!--获取用户当前快信币余额-->
+                <str:atoi src="$buf" result="$kxb"/>
+                <std:add first="$kxb" second="$kxjr" result="$kxb"/><!--增加中得的快信币-->
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$kxb"/>
+                <userdata:setv bid="$_BID" ms="$ms" key="$keykxb" buf="$buf" result="$rs"/>
+                <!--****先增加中得的快信币****-->
+                <!--中5个快信币-->
+                <equal first="$kxjr" second="5">
+                    <conn:setresp rid="$_RID" Message="$msg303" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                  ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                </equal>
+                <!--中20个快信币-->
+                <equal first="$kxjr" second="20">
+                    <conn:setresp rid="$_RID" Message="$msg3031" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                  ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                </equal>
+                <!--中50个快信币-->
+                <equal first="$kxjr" second="50">
+                    <conn:setresp rid="$_RID" Message="$msg3032" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                  ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                </equal>
+            </noequal>
+
+
+        </function>
+
+
+        <!--轮盘规则-->
+        <function id="LPGZ">
+            <str:copy dest="$statusbuf" source="301"/>
+            <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+            <conn:setresp rid="$_RID" Message="$msglpgz1" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="5"
+                          CurrentIndex="1" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msglpgz2" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="5"
+                          CurrentIndex="2" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msglpgz3" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="5"
+                          CurrentIndex="3" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msglpgz4" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="5"
+                          CurrentIndex="4" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msglpgz5" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="5"
+                          CurrentIndex="5" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msglpgz6" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="5"
+                          CurrentIndex="6" port="$port"/>
+            <return/>
+        </function>
+
+
+        <!--轮盘流量查询-->
+        <!--
+        第一季度活动没用到轮盘查询（LPCX）模块。可以屏蔽该模块。
+        -->
+        <function id="LPCX">
+            <str:copy dest="$statusbuf" source="302"/>
+            <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+            <str:copy dest="$buf" source=""/>
+
+            <str:copy dest="$keylpllmm" source="$timestrmm"/>
+            <str:cat src="$keylpllmm" end="LPLLMM"/>
+
+            <userdata:getv bid="$_BID" ms="$ms" key="$keylpllmm" buf="$buf" result="$rs"/>
+
+
+            <std:assign dest="$integral" source="0"/>
+            <str:atoi src="$buf" result="$integral"/>
+            <std:div first="$integral" second="$integral10" result="$inttmp1"/>
+            <std:mod first="$integral" second="$integral10" result="$inttmp2"/>
+            <!--无小数点-->
+            <equal first="$inttmp2" second="0">
+                <str:copy dest="$buf" source=""/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$inttmp1"/>
+                <str:replace src="$msg302" old="AAAA" new="$buf" value="$msg302"/>
+            </equal>
+            <!--有小数点-->
+            <noequal first="$inttmp2" second="0">
+                <str:copy dest="$buf" source=""/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$inttmp1"/>
+                <str:cat src="$buf" end="."/>
+                <str:copy dest="$buf1" source=""/>
+                <std:sprint strvalue="$buf1" fmt="%lld" p0="$inttmp2"/>
+                <str:cat src="$buf" end="$buf1"/>
+                <str:replace src="$msg302" old="AAAA" new="$buf" value="$msg302"/>
+            </noequal>
+
+
+            <str:copy dest="$buf" source=""/>
+            <std:assign dest="$integral" source="0"/>
+            <userdata:geti bid="$_BID" ms="$ms" integral="$integral" result="$rs"/>
+            <std:assign dest="$inttmp1" source="0"/>
+            <std:assign dest="$inttmp2" source="0"/>
+            <std:div first="$integral" second="$integral10" result="$inttmp1"/>
+            <std:mod first="$integral" second="$integral10" result="$inttmp2"/>
+            <!--无小数点-->
+            <equal first="$inttmp2" second="0">
+                <str:copy dest="$buf" source=""/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$inttmp1"/>
+                <str:replace src="$msg302" old="BBBB" new="$buf" value="$msg302"/>
+            </equal>
+            <!--有小数点-->
+            <noequal first="$inttmp2" second="0">
+                <str:copy dest="$buf" source=""/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$inttmp1"/>
+                <str:cat src="$buf" end="."/>
+                <str:copy dest="$buf1" source=""/>
+                <std:sprint strvalue="$buf1" fmt="%lld" p0="$inttmp2"/>
+                <str:cat src="$buf" end="$buf1"/>
+                <str:replace src="$msg302" old="BBBB" new="$buf" value="$msg302"/>
+            </noequal>
+            <conn:setresp rid="$_RID" Message="$msg302" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                          CurrentIndex="1" port="$port"/>
+            <return/>
+        </function>
+
+        <!--规则-->
+        <function id="GZ">
+            <str:copy dest="$statusbuf" source="400"/>
+            <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+            <conn:setresp rid="$_RID" Message="$msggz1" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="7"
+                          CurrentIndex="1" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msggz2" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="7"
+                          CurrentIndex="2" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msggz3" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="7"
+                          CurrentIndex="3" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msggz4" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="7"
+                          CurrentIndex="4" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msggz5" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="7"
+                          CurrentIndex="5" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msggz6" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="7"
+                          CurrentIndex="6" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msggz7" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="7"
+                          CurrentIndex="7" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msggz8" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="8"
+                          CurrentIndex="8" port="$port"/>
+
+            <return/>
+        </function>
+
+        <!--流量查询-->
+        <function id="LLCX">
+            <str:copy dest="$statusbuf" source="500"/>
+            <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+
+
+            <str:copy dest="$buf" source=""/>
+            <std:assign dest="$integral" source="0"/>
+            <userdata:geti bid="$_BID" ms="$ms" integral="$integral" result="$rs"/>
+            <std:assign dest="$inttmp1" source="0"/>
+            <std:assign dest="$inttmp2" source="0"/>
+            <std:div first="$integral" second="$integral10" result="$inttmp1"/>
+            <std:mod first="$integral" second="$integral10" result="$inttmp2"/>
+            <!--无小数点-->
+            <equal first="$inttmp2" second="0">
+                <str:copy dest="$buf" source=""/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$inttmp1"/>
+                <str:replace src="$msg500" old="AAAA" new="$buf" value="$msg500"/>
+            </equal>
+            <!--有小数点-->
+            <noequal first="$inttmp2" second="0">
+                <str:copy dest="$buf" source=""/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$inttmp1"/>
+                <str:cat src="$buf" end="."/>
+                <str:copy dest="$buf1" source=""/>
+                <std:sprint strvalue="$buf1" fmt="%lld" p0="$inttmp2"/>
+                <str:cat src="$buf" end="$buf1"/>
+                <str:replace src="$msg500" old="AAAA" new="$buf" value="$msg500"/>
+            </noequal>
+            <conn:setresp rid="$_RID" Message="$msg500" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                          CurrentIndex="1" port="$port"/>
+            <return/>
+
+
+        </function>
+
+
+        <!--流量兑换提示-->
+        <function id="LLTS">
+            <str:copy dest="$statusbuf" source="501"/>
+            <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+
+            <conn:setresp rid="$_RID" Message="$msg501" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                          CurrentIndex="1" port="$port"/>
+            <return/>
+        </function>
+
+        <!--流量兑换-->
+        <function id="LLDH">
+            <str:copy dest="$statusbuf" source="502"/>
+            <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+            <!--判断本月兑换金是否大于等于1980如果大于则提示用户不可兑换-->
+            <str:cat src="$ydhje" end="$timestrmm"/>
+            <ywdata:getint ywid="$_BID" key="$ydhje" rs="$rs" value="$ydhmmed"/>
+            <greaterequal first="$ydhmmed" second="1980">
+                <conn:setresp rid="$_RID" Message="$msgydh" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                              CurrentIndex="1" port="$port"/>
+                <return/>
+            </greaterequal>
+            <!--判断本月兑换金是否大于1980如果大于则提示用户不可兑换-->
+            <!--***新增内容，已兑换KEY***-->
+            <str:copy dest="$buf" source=""/>
+
+            <str:copy dest="$ydh" source="$timestrmm"/>
+            <str:cat src="$ydh" end="YDH"/>
+            <!--***新增内容，已兑换KEY***-->
+
+            <switch select="$code2">
+                <case value="1">
+                    <std:assign dest="$newvalue" source="100"/>
+                    <str:copy dest="$nameprize" source="10"/>
+                    <break/>
+                </case>
+
+                <case value="2">
+                    <std:assign dest="$newvalue" source="200"/>
+                    <str:copy dest="$nameprize" source="20"/>
+                    <break/>
+                </case>
+
+                <case value="3">
+                    <std:assign dest="$newvalue" source="300"/>
+                    <str:copy dest="$nameprize" source="30"/>
+                    <break/>
+                </case>
+
+
+            </switch>
+
+            <!--提示用户本月话费已兑换完毕-->
+            <!--conn:setresp rid="$_RID" Message="$msgydh" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1" CurrentIndex="1"  port="$port"/>
+            <return/-->
+
+            <!--提示用户本月话费已兑换完毕-->
+
+            <!--查询用户当月是否兑换-->
+
+            <!--str:copy dest="$buf" source=""/-->
+            <!--userdata:getv bid="$_BID" ms="$ms" key="$timestrmm" buf="$buf" result="$rs"/-->
+            <!--当月已兑换，不允许再兑换-->
+            <!--noequal first="$buf" second="">
+                <conn:setresp rid="$_RID" Message="$msg502" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1" CurrentIndex="1"  port="$port"/>
+                <return/>
+            </noequal-->
+
+            <!--equal first="$buf" second=""-->
+            <!--判断用户流量是否可以兑换-->
+            <std:assign dest="$integral" source="0"/>
+            <userdata:geti bid="$_BID" ms="$ms" integral="$integral" result="$rs"/>
+
+
+            <equal first="$integral" second="0">
+                <conn:setresp rid="$_RID" Message="$msg504" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                              CurrentIndex="1" port="$port"/>
+                <return/>
+            </equal>
+
+            <!--******新增内容，获取用户已兑换金额*******-->
+            <userdata:getv bid="$_BID" ms="$ms" key="$ydh" buf="$buf" result="$rs"/>
+            <greaterequal first="$buf" second="300">
+                <conn:setresp rid="$_RID" Message="$msg505" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                              CurrentIndex="1" port="$port"/>
+                <return/>
+            </greaterequal>
+            <!--******新增内容，获取用户已兑换金额*******-->
+            <!--******新增内容，获取用户已兑换金额*******-->
+            <str:atoi src="$buf" result="$value"/>
+            <std:add first="$value" second="$newvalue" result="$newvalue1"/>
+            <std:sprint strvalue="$buf" fmt="%lld" p0="$newvalue1"/>
+            <greaterthan first="$buf" second="300">
+                <conn:setresp rid="$_RID" Message="$msg506" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                              CurrentIndex="1" port="$port"/>
+                <return/>
+            </greaterthan>
+            <!--******新增内容，获取用户已兑换金额*******-->
+
+            <!--成功兑换-->
+            <greaterequal first="$integral" second="$newvalue">
+                <str:copy dest="$statusbuf" source="503"/>
+                <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+                <userdata:deci bid="$_BID" ms="$ms" decrease="$newvalue" integral="$integral" result="$rs"/>
+                <userdata:setv bid="$_BID" ms="$ms" key="$timestrmm" buf="$nameprize" result="$rs"/>
+                <str:copy dest="$buf" source="$ms"/>
+                <str:cat src="$buf" end=";"/>
+                <str:cat src="$buf" end="$nameprize"/>
+                <ywdata:writedata ywid="$_ywbidtmp" content="$buf" rs="$rs"/>
+                <str:replace src="$msg503" old="AAAA" new="$nameprize" value="$msg503"/>
+                <conn:setresp rid="$_RID" Message="$msg503" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                              CurrentIndex="1" port="$port"/>
+                <!--记录当前总兑换量-->
+
+                <!--砸蛋获取当月已兑奖金额，以角为单位-->
+                <ywdata:addint ywid="$_BID" key="$keydhllall" value="$newvalue" rs="$rs" newvalue="$value"/>
+
+                <!--增加本月兑换金-->
+                <std:div first="$newvalue" second="10" result="$newvalue3"/>
+                <ywdata:addint ywid="$_BID" key="$ydhje" value="$newvalue3" rs="$rs" newvalue="$newvalue2"/>
+                <!--增加本月兑换金-->
+
+                <!--**新增内容，先获取用户是否已兑换**-->
+                <str:copy dest="$buf" source=""/>
+                <userdata:getv bid="$_BID" ms="$ms" key="$ydh" buf="$buf" result="$rs"/>
+                <!--**新增内容，获取到了说明已有兑换记录**-->
+                <equal first="$rs" second="0">
+                    <str:atoi src="$buf" result="$cxydhed"/>
+                    <std:add first="$cxydhed" second="$newvalue" result="$ydhed"/>
+                    <std:assign dest="$newvalue" source="$ydhed"/>
+                </equal>
+
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$newvalue"/>
+                <userdata:setv bid="$_BID" ms="$ms" key="$ydh" buf="$buf" result="$rs"/>
+                <!--**新增内容，先获取用户是否已兑换**-->
+
+
+                <return/>
+            </greaterequal>
+
+            <lessthan first="$integral" second="$newvalue">
+                <conn:setresp rid="$_RID" Message="$msg504" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1"
+                              CurrentIndex="1" port="$port"/>
+                <return/>
+            </lessthan>
+
+
+            <!--/equal-->
+
+        </function>
+
+        <!--查询-->
+        <function id="CX">
+            <equal first="$code2" second="1">
+                <conn:setreq rid="$_RID" servicetype="$st" servicecode="$sc" message="$hfmsg" msisdn="$ms"
+                             serviceaddr="$oa"/>
+                <proxy:request rid="$_RID" proxyid="$proxyid" targetid="$targetid" timeout="10" result="$rs"
+                               message1="$message1" message2="$message2" message3="$message3"/>
+                <noequal first="$rs" second="0">
+                    <conn:setcode rid="$_RID" code="106"/>
+                    <return/>
+                </noequal>
+
+                <!--输出获取的信息源 -->
+                <str:trim src="$message1"/>
+                <str:wlen src="$message1" len="$msg_len"/>
+                <str:sub src="$message1" start="0" len="60" sub="$message2"/>
+
+                <str:cat src="$message2" end="$msgtail"/>
+
+
+                <conn:setresp rid="$_RID" Message="$message2" msIsdn="$ms" ServiceAddr="$oa" ChargeCode="$chargecode"
+                              ip="$ip" port="$port"/>
+                <greaterthan first="$msg_len" second="60">
+                    <continue-response/>
+                    <str:sub src="$message1" start="60" len="60" sub="$message2"/>
+                    <conn:setresp rid="$_RID" Message="$message2" msIsdn="$ms" ServiceAddr="$oa"
+                                  ChargeCode="$chargecode" ip="$ip" port="$port"/>
+                </greaterthan>
+
+                <greaterthan first="$msg_len" second="120">
+                    <continue-response/>
+                    <str:sub src="$message1" start="120" len="60" sub="$message2"/>
+                    <conn:setresp rid="$_RID" Message="$message2" msIsdn="$ms" ServiceAddr="$oa"
+                                  ChargeCode="$chargecode" ip="$ip" port="$port"/>
+                </greaterthan>
+
+                <greaterthan first="$msg_len" second="180">
+                    <continue-response/>
+                    <str:sub src="$message1" start="180" len="60" sub="$message2"/>
+                    <conn:setresp rid="$_RID" Message="$message2" msIsdn="$ms" ServiceAddr="$oa"
+                                  ChargeCode="$chargecode" ip="$ip" port="$port"/>
+                </greaterthan>
+
+                <greaterthan first="$msg_len" second="240">
+                    <continue-response/>
+                    <str:sub src="$message1" start="240" len="60" sub="$message2"/>
+                    <conn:setresp rid="$_RID" Message="$message2" msIsdn="$ms" ServiceAddr="$oa"
+                                  ChargeCode="$chargecode" ip="$ip" port="$port"/>
+                </greaterthan>
+
+                <!--以yyyymm为key值，查询用户当月是否已经下发过查询抽奖号码-->
+                <ywg:nowtimestr formatstr="yyyymm" timestr="$timestr"/>
+                <std:assign dest="$rs" source="1"/>
+                <userdata:getv bid="$_BID" ms="$ms" key="$timestr" buf="$buf" result="$rs"/>
+                <!--查询到记录，表明本月已经下发过抽奖号码，直接退出-->
+                <equal first="$rs" second="0">
+                    <return/>
+                </equal>
+                <!--获取抽奖码-->
+
+                <ywdata:getint ywid="$_BID" key="$key" rs="$rs" value="$value"/>
+                <equal first="$rs" second="0">
+                    <std:assign dest="$value" source="1"/>
+                </equal>
+                <noequal first="$rs" second="0">
+                    <std:inc var="$value"/>
+                </noequal>
+                <ywdata:setint ywid="$_BID" key="$key" value="$value" rs="$rs"/>
+                <str:copy dest="$buf" source=""/>
+                <std:sprint strvalue="$buf" fmt="%lld" p0="$value"/>
+                <str:copy dest="$bufcj" source="H"/>
+                <str:cat src="$bufcj" end="$buf"/>
+                <str:copy dest="$buf" source="$ms"/>
+                <str:cat src="$buf" end=";"/>
+                <str:cat src="$buf" end="$bufcj"/>
+                <userdata:setv bid="$_BID" ms="$ms" key="$timestr" buf="$bufcj" result="$rs"/>
+                <ywdata:writedata ywid="$_BID" content="$buf" rs="$rs"/>
+                <str:replace src="$msg11" old="AAAA" new="$bufcj" value="$msg11"/>
+                <continue-response/>
+                <conn:setresp rid="$_RID" Message="$msg11" ServiceAddr="$sendoa" ChargeCode="$chargecode"
+                              ContinueTotal="1" CurrentIndex="1" ip="$sendip" port="$sendport"/>
+                <return/>
+            </equal>
+
+            <!--非查询指令，下发规则-->
+            <noequal first="$code2" second="1">
+                <conn:setresp rid="$_RID" Message="$msg12" msIsdn="$ms" ServiceAddr="$oa" ChargeCode="$chargecode"
+                              ContinueTotal="2" CurrentIndex="1" ip="$ip" port="$port"/>
+                <continue-response/>
+                <conn:setresp rid="$_RID" Message="$msg13" msIsdn="$ms" ServiceAddr="$oa" ChargeCode="$chargecode"
+                              ContinueTotal="2" CurrentIndex="2" ip="$ip" port="$port"/>
+
+            </noequal>
+
+
+        </function>
+
+
+        <function id="DBQB">
+            <!--设置用户状态-->
+            <str:copy dest="$statusbuf" source="504"/>
+            <userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/>
+
+
+            <str:len src="$code2" len="$len"/>
+            <!--提示用户输入夺宝代码-->
+            <equal first="$len" second="0">
+                <!--userdata:setv bid="$_BID" ms="$ms" key="$key0" buf="$statusbuf" result="$rs"/-->
+
+                <switch select="$timestrmm">
+                    <case value="201707">
+                        <!--获取夺宝答题次数-->
+                        <std:assign dest="$value" source="1"/>
+                        <ywdata:addint ywid="$_BID" key="$keydbmm1" value="$value" rs="$rs" newvalue="$newvaluedb2"/>
+                        <std:mod first="$newvaluedb2" second="2" result="$intdb2"/>
+                        <equal first="$intdb2" second="1">
+                            <conn:setresp rid="$_RID" Message="$msgdbqb1701" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                          ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                            <str:copy dest="$buf" source="$keydb1"/>
+                            <userdata:setv bid="$_BID" ms="$ms" key="$msgdbqbkey" buf="$buf" result="$rs"/>
+                            <return/>
+                        </equal>
+                        <equal first="$intdb2" second="0">
+                            <conn:setresp rid="$_RID" Message="$msgdbqb1702" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                          ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                            <str:copy dest="$buf" source="$keydb2"/>
+                            <userdata:setv bid="$_BID" ms="$ms" key="$msgdbqbkey" buf="$buf" result="$rs"/>
+                            <return/>
+                        </equal>
+
+                    </case>
+                    <case value="201708">
+                        <!--获取夺宝答题次数-->
+                        <std:assign dest="$value" source="1"/>
+                        <ywdata:addint ywid="$_BID" key="$keydbmm1" value="$value" rs="$rs" newvalue="$newvaluedb2"/>
+                        <std:mod first="$newvaluedb2" second="2" result="$intdb2"/>
+                        <equal first="$intdb2" second="1">
+                            <conn:setresp rid="$_RID" Message="$msgdbqb1703" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                          ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                            <str:copy dest="$buf" source="$keydb3"/>
+                            <userdata:setv bid="$_BID" ms="$ms" key="$msgdbqbkey" buf="$buf" result="$rs"/>
+                            <return/>
+                        </equal>
+                        <equal first="$intdb2" second="0">
+                            <conn:setresp rid="$_RID" Message="$msgdbqb1704" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                          ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                            <str:copy dest="$buf" source="$keydb4"/>
+                            <userdata:setv bid="$_BID" ms="$ms" key="$msgdbqbkey" buf="$buf" result="$rs"/>
+                            <return/>
+                        </equal>
+                    </case>
+                    <case value="201709">
+                        <!--获取夺宝答题次数-->
+                        <std:assign dest="$value" source="1"/>
+                        <ywdata:addint ywid="$_BID" key="$keydbmm1" value="$value" rs="$rs" newvalue="$newvaluedb2"/>
+                        <std:mod first="$newvaluedb2" second="2" result="$intdb2"/>
+                        <equal first="$intdb2" second="1">
+                            <conn:setresp rid="$_RID" Message="$msgdbqb1705" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                          ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                            <str:copy dest="$buf" source="$keydb5"/>
+                            <userdata:setv bid="$_BID" ms="$ms" key="$msgdbqbkey" buf="$buf" result="$rs"/>
+                            <return/>
+                        </equal>
+                        <equal first="$intdb2" second="0">
+                            <conn:setresp rid="$_RID" Message="$msgdbqb1706" ServiceAddr="$oa" ChargeCode="$chargecode"
+                                          ContinueTotal="1" CurrentIndex="1" port="$port"/>
+                            <str:copy dest="$buf" source="$keydb6"/>
+                            <userdata:setv bid="$_BID" ms="$ms" key="$msgdbqbkey" buf="$buf" result="$rs"/>
+                            <return/>
+                        </equal>
+                    </case>
+                </switch>
+
+
+            </equal>
+            <!--检查code2长度，如果不是4位数，提示代码错误-->
+            <!--noequal first="$len" second="4">
+                <conn:setresp rid="$_RID" Message="$msgdbqb05" msIsdn="$ms" ServiceAddr="$oa" ChargeCode="$chargecode" ContinueTotal="1" CurrentIndex="1" ip="$ip" port="$port"/>
+                <return/>
+            </noequal-->
+
+            <!--设置夺宝中奖key值-->
+            <str:copy dest="$keydbqb" source="$timestrmm"/>
+            <str:cat src="$keydbqb" end="DBQB"/>
+            <str:copy dest="$buf" source=""/>
+            <!--获取本月用户夺宝金额-->
+            <userdata:getv bid="$_BID" ms="$ms" key="$keydbqb" buf="$buf" result="$rs"/>
+
+            <!--获取成功提示本月已兑换-->
+            <equal first="$rs" second="0">
+                <conn:setresp rid="$_RID" Message="$msgdbqb06" msIsdn="$ms" ServiceAddr="$oa" ChargeCode="$chargecode"
+                              ContinueTotal="1" CurrentIndex="1" ip="$ip" port="$port"/>
+                <return/>
+            </equal>
+
+
+            <!--判断code2是否为7,8,9月正确代码，是取总次数的最后一位数判断中奖金额-->
+            <switch select="$timestrmm">
+                <case value="201707">
+                    <equal first="$code2" second="$keydb1">
+                        <str:copy dest="$buf" source=""/>
+                        <userdata:getv bid="$_BID" ms="$ms" key="$msgdbqbkey" buf="$buf" result="$rs"/>
+                        <equal first="$code2" second="$buf">
+                            <!--设置该活动总上行次数，每次+1，valueall为当前总上行次数-->
+                            <std:assign dest="$value" source="1"/>
+                            <ywdata:addint ywid="$_BID" key="$keydbcount" value="$value" rs="$rs"
+                                           newvalue="$newvaluedb"/>
+                            <std:assign dest="$valuealldb" source="$newvaluedb"/>
+                            <std:sprint strValue="$valuealldb1" fmt="%lld" p0="$valuealldb"/><!--将总夺宝次数转换为字串-->
+                            <!--获取余的长度-->
+                            <str:len src="$valuealldb1" len="$length"/>
+                            <std:sub first="$length" second="1" result="$sidb3"/>
+                            <!--取最后一位数-->
+                            <str:sub src="$valuealldb1" start="$sidb3" len="1" sub="$strdb2"/>
+                            <str:atoi src="$strdb2" result="$intdb1"/>
+                            <break/>
+                        </equal>
+                    </equal>
+
+
+                    <equal first="$code2" second="$keydb2">
+                        <str:copy dest="$buf" source=""/>
+                        <userdata:getv bid="$_BID" ms="$ms" key="$msgdbqbkey" buf="$buf" result="$rs"/>
+                        <equal first="$code2" second="$buf">
+                            <!--设置该活动总上行次数，每次+1，valueall为当前总上行次数-->
+                            <std:assign dest="$value" source="1"/>
+                            <ywdata:addint ywid="$_BID" key="$keydbcount" value="$value" rs="$rs"
+                                           newvalue="$newvaluedb"/>
+                            <std:assign dest="$valuealldb" source="$newvaluedb"/>
+                            <std:sprint strValue="$valuealldb1" fmt="%lld" p0="$valuealldb"/><!--将总夺宝次数转换为字串-->
+                            <!--获取余的长度-->
+                            <str:len src="$valuealldb1" len="$length"/>
+                            <std:sub first="$length" second="1" result="$sidb3"/>
+                            <!--取最后一位数-->
+                            <str:sub src="$valuealldb1" start="$sidb3" len="1" sub="$strdb2"/>
+                            <str:atoi src="$strdb2" result="$intdb1"/>
+                            <break/>
+                        </equal>
+                    </equal>
+                    <noequal first="$code2" second="$keydb1">
+                        <conn:setresp rid="$_RID" Message="$msgdbqb05" msIsdn="$ms" ServiceAddr="$oa"
+                                      ChargeCode="$chargecode" ContinueTotal="1" CurrentIndex="1" ip="$ip"
+                                      port="$port"/>
+                        <return/>
+                    </noequal>
+                    <noequal first="$code2" second="$keydb2">
+                        <conn:setresp rid="$_RID" Message="$msgdbqb05" msIsdn="$ms" ServiceAddr="$oa"
+                                      ChargeCode="$chargecode" ContinueTotal="1" CurrentIndex="1" ip="$ip"
+                                      port="$port"/>
+                        <return/>
+                    </noequal>
+
+
+                </case>
+
+                <case value="201708">
+                    <equal first="$code2" second="$keydb3">
+                        <str:copy dest="$buf" source=""/>
+                        <userdata:getv bid="$_BID" ms="$ms" key="$msgdbqbkey" buf="$buf" result="$rs"/>
+                        <equal first="$code2" second="$buf">
+                            <!--设置该活动总上行次数，每次+1，valueall为当前总上行次数-->
+                            <std:assign dest="$value" source="1"/>
+                            <ywdata:addint ywid="$_BID" key="$keydbcount" value="$value" rs="$rs"
+                                           newvalue="$newvaluedb"/>
+                            <std:assign dest="$valuealldb" source="$newvaluedb"/>
+                            <std:sprint strValue="$valuealldb1" fmt="%lld" p0="$valuealldb"/><!--将总夺宝次数转换为字串-->
+                            <!--获取余的长度-->
+                            <str:len src="$valuealldb1" len="$length"/>
+                            <std:sub first="$length" second="1" result="$sidb3"/>
+                            <!--取最后一位数-->
+                            <str:sub src="$valuealldb1" start="$sidb3" len="1" sub="$strdb2"/>
+                            <str:atoi src="$strdb2" result="$intdb1"/>
+                            <break/>
+                        </equal>
+                    </equal>
+
+                    <equal first="$code2" second="$keydb4">
+                        <str:copy dest="$buf" source=""/>
+                        <userdata:getv bid="$_BID" ms="$ms" key="$msgdbqbkey" buf="$buf" result="$rs"/>
+                        <equal first="$code2" second="$buf">
+                            <!--设置该活动总上行次数，每次+1，valueall为当前总上行次数-->
+                            <std:assign dest="$value" source="1"/>
+                            <ywdata:addint ywid="$_BID" key="$keydbcount" value="$value" rs="$rs"
+                                           newvalue="$newvaluedb"/>
+                            <std:assign dest="$valuealldb" source="$newvaluedb"/>
+                            <std:sprint strValue="$valuealldb1" fmt="%lld" p0="$valuealldb"/><!--将总夺宝次数转换为字串-->
+                            <!--获取余的长度-->
+                            <str:len src="$valuealldb1" len="$length"/>
+                            <std:sub first="$length" second="1" result="$sidb3"/>
+                            <!--取最后一位数-->
+                            <str:sub src="$valuealldb1" start="$sidb3" len="1" sub="$strdb2"/>
+                            <str:atoi src="$strdb2" result="$intdb1"/>
+                            <break/>
+                        </equal>
+                    </equal>
+                    <noequal first="$code2" second="$keydb3">
+                        <conn:setresp rid="$_RID" Message="$msgdbqb05" msIsdn="$ms" ServiceAddr="$oa"
+                                      ChargeCode="$chargecode" ContinueTotal="1" CurrentIndex="1" ip="$ip"
+                                      port="$port"/>
+                        <return/>
+                    </noequal>
+                    <noequal first="$code2" second="$keydb4">
+                        <conn:setresp rid="$_RID" Message="$msgdbqb05" msIsdn="$ms" ServiceAddr="$oa"
+                                      ChargeCode="$chargecode" ContinueTotal="1" CurrentIndex="1" ip="$ip"
+                                      port="$port"/>
+                        <return/>
+                    </noequal>
+                    <break/>
+                </case>
+
+                <case value="201709">
+                    <equal first="$code2" second="$keydb5">
+                        <str:copy dest="$buf" source=""/>
+                        <userdata:getv bid="$_BID" ms="$ms" key="$msgdbqbkey" buf="$buf" result="$rs"/>
+                        <equal first="$code2" second="$buf">
+                            <!--设置该活动总上行次数，每次+1，valueall为当前总上行次数-->
+                            <std:assign dest="$value" source="1"/>
+                            <ywdata:addint ywid="$_BID" key="$keydbcount" value="$value" rs="$rs"
+                                           newvalue="$newvaluedb"/>
+                            <std:assign dest="$valuealldb" source="$newvaluedb"/>
+                            <std:sprint strValue="$valuealldb1" fmt="%lld" p0="$valuealldb"/><!--将总夺宝次数转换为字串-->
+                            <!--获取余的长度-->
+                            <str:len src="$valuealldb1" len="$length"/>
+                            <std:sub first="$length" second="1" result="$sidb3"/>
+                            <!--取最后一位数-->
+                            <str:sub src="$valuealldb1" start="$sidb3" len="1" sub="$strdb2"/>
+                            <str:atoi src="$strdb2" result="$intdb1"/>
+                            <break/>
+                        </equal>
+                    </equal>
+
+                    <equal first="$code2" second="$keydb6">
+                        <str:copy dest="$buf" source=""/>
+                        <userdata:getv bid="$_BID" ms="$ms" key="$msgdbqbkey" buf="$buf" result="$rs"/>
+                        <equal first="$code2" second="$buf">
+                            <!--设置该活动总上行次数，每次+1，valueall为当前总上行次数-->
+                            <std:assign dest="$value" source="1"/>
+                            <ywdata:addint ywid="$_BID" key="$keydbcount" value="$value" rs="$rs"
+                                           newvalue="$newvaluedb"/>
+                            <std:assign dest="$valuealldb" source="$newvaluedb"/>
+                            <std:sprint strValue="$valuealldb1" fmt="%lld" p0="$valuealldb"/><!--将总夺宝次数转换为字串-->
+                            <!--获取余的长度-->
+                            <str:len src="$valuealldb1" len="$length"/>
+                            <std:sub first="$length" second="1" result="$sidb3"/>
+                            <!--取最后一位数-->
+                            <str:sub src="$valuealldb1" start="$sidb3" len="1" sub="$strdb2"/>
+                            <str:atoi src="$strdb2" result="$intdb1"/>
+                            <break/>
+                        </equal>
+                    </equal>
+                    <noequal first="$code2" second="$keydb5">
+                        <conn:setresp rid="$_RID" Message="$msgdbqb05" msIsdn="$ms" ServiceAddr="$oa"
+                                      ChargeCode="$chargecode" ContinueTotal="1" CurrentIndex="1" ip="$ip"
+                                      port="$port"/>
+                        <return/>
+                    </noequal>
+                    <noequal first="$code2" second="$keydb6">
+                        <conn:setresp rid="$_RID" Message="$msgdbqb05" msIsdn="$ms" ServiceAddr="$oa"
+                                      ChargeCode="$chargecode" ContinueTotal="1" CurrentIndex="1" ip="$ip"
+                                      port="$port"/>
+                        <return/>
+                    </noequal>
+                    <break/>
+                </case>
+                <conn:setresp rid="$_RID" Message="$msgdbqb05" msIsdn="$ms" ServiceAddr="$oa" ChargeCode="$chargecode"
+                              ContinueTotal="1" CurrentIndex="1" ip="$ip" port="$port"/>
+                <return/>
+            </switch>
+
+
+            <!--判断中奖金额-->
+            <switch select="$intdb1">
+                <!--中2元话费-->
+                <case value="1" value1="2" value2="3" value3="0" value4="4" value5="5">
+                    <std:assign dest="$dbjr" source="20"/>
+                    <str:copy dest="$nameprize" source="2"/>
+                    <conn:setresp rid="$_RID" Message="$msgdbqb02" msIsdn="$ms" ServiceAddr="$oa"
+                                  ChargeCode="$chargecode" ContinueTotal="1" CurrentIndex="1" ip="$ip" port="$port"/>
+                    <break/>
+                </case>
+                <!--中3元话费-->
+                <case value="6" value1="7">
+                    <std:assign dest="$dbjr" source="30"/>
+                    <str:copy dest="$nameprize" source="3"/>
+                    <conn:setresp rid="$_RID" Message="$msgdbqb03" msIsdn="$ms" ServiceAddr="$oa"
+                                  ChargeCode="$chargecode" ContinueTotal="1" CurrentIndex="1" ip="$ip" port="$port"/>
+                    <break/>
+                </case>
+                <!--中5元话费-->
+                <case value="8" value1="9">
+                    <std:assign dest="$dbjr" source="50"/>
+                    <str:copy dest="$nameprize" source="5"/>
+                    <conn:setresp rid="$_RID" Message="$msgdbqb04" msIsdn="$ms" ServiceAddr="$oa"
+                                  ChargeCode="$chargecode" ContinueTotal="1" CurrentIndex="1" ip="$ip" port="$port"/>
+                    <break/>
+                </case>
+            </switch>
+
+            <userdata:inci bid="$_BID" ms="$ms" increase="$dbjr" integral="$integral" result="$rs"/>
+
+            <!--设置用户当月夺宝金额-->
+            <str:copy dest="$buf" source=""/>
+            <std:sprint strvalue="$buf" fmt="%lld" p0="$dbjr"/>
+            <userdata:setv bid="$_BID" ms="$ms" key="$keydbqb" buf="$buf" result="$rs"/>
+
+            <!--设置每月参与用户人数-->
+            <str:copy dest="$keydbmm" source="$timestrmm"/>
+            <str:cat src="$keydbmm" end="DBCOUNTMM"/>
+            <std:assign dest="$value" source="1"/>
+            <ywdata:addint ywid="$_BID" key="$keydbmm" value="$value" rs="$rs" newvalue="$newvaluedb1"/>
+
+        </function>
+        <function id="DBQBGZ">
+            <conn:setresp rid="$_RID" Message="$msgdbqbgz01" ServiceAddr="$oa" ChargeCode="$chargecode"
+                          ContinueTotal="2" CurrentIndex="1" port="$port"/>
+            <continue-response/>
+            <conn:setresp rid="$_RID" Message="$msgdbqbgz02" ServiceAddr="$oa" ChargeCode="$chargecode"
+                          ContinueTotal="2" CurrentIndex="2" port="$port"/>
+            <return/>
+        </function>
+
+
+    </functions>
+</bwisp-script>
