@@ -32,10 +32,11 @@ def index(request):
 
 def query(request):
     para = request.GET.get("para")  # 获取用户输入的内容
-    ret = {"messages":
-               [{"msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
-                ]
-           }
+    ret_default = {"messages":
+                       [{"t": "0",
+                         "msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
+                        ]
+                   }
     # 首次登录提示信息
     if para == "index":
         ret = {"messages":
@@ -114,7 +115,17 @@ def query(request):
                 msg = ""
                 flag = False
                 if re.match(r'[A-Za-z]+', para):  # 匹配到纯字母, 获取期货信息
-                    datas = models.Data.objects.filter(name__istartswith=para)
+                    data_all = models.Data.objects.filter(name__istartswith=para)
+                    if data_all:
+                        for data in data_all:
+                            msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=data.name)
+                            ret = {"messages":
+                                       [{"t": "1",
+                                         "msg": msg}
+                                        ]
+                                   }
+                    else:
+                        ret = ret_default
                 else:
                     # 先获取期货品种信息
                     if para.endswith("更多"):
@@ -122,11 +133,9 @@ def query(request):
                     else:
                         new_para = para
                     futures = models.Futures.objects.filter(veriety__startswith=new_para)
+
                     if futures.count() >= 24:
-                        ret = {"messages":
-                                   [{"msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
-                                    ]
-                               }
+                        ret = ret_default
                     elif futures.count() >= 1:
                         num = 0
                         for future in futures:
@@ -183,10 +192,7 @@ def query(request):
                                             ]
                                        }
                         else:
-                            ret = {"messages":
-                                       [{"msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
-                                        ]
-                                   }
+                            ret = ret_default
     return HttpResponse("%s" % json.dumps(ret))
 
 
