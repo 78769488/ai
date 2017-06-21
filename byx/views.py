@@ -113,21 +113,19 @@ def query(request):
                        }
             else:
                 msg = ""
-                flag = False
                 if re.match(r'[A-Za-z]+', para):  # 匹配到纯字母, 获取期货信息
-                    data_all = models.Data.objects.filter(name__istartswith=para)
+                    data_all = models.Data.objects.filter(code__istartswith=para)
                     if data_all:
                         for data in data_all:
                             msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=data.name)
-                            ret = {"messages":
-                                       [{"t": "1",
-                                         "msg": msg}
-                                        ]
-                                   }
+                        ret = {"messages":
+                                   [{"t": "1",
+                                     "msg": msg}
+                                    ]
+                               }
                     else:
                         ret = ret_default
-                else:
-                    # 先获取期货品种信息
+                else:  # 先获取期货品种信息
                     if para.endswith("更多"):
                         new_para = para.replace("更多", "")
                     else:
@@ -140,57 +138,75 @@ def query(request):
                         num = 0
                         for future in futures:
                             num += 1
-                            if futures.count() > 12:  # 多于12条记录, 分次返回
+                            if futures.count() > 15:  # 多于15条记录, 分次返回
                                 if para.endswith("更多"):
-                                    print("更多.................")
-                                    if num < 24:
-                                        if num >= 12:
-                                            msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=future.name)
+                                    if num >= 12:
+                                        msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=future.name)
                                 elif num < 12:
                                     msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=future.name)
                                 else:
-                                    print(num)
                                     more_info = para + "更多"
                                     msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=more_info)
-                                    print(msg)
                                     break
-                            else:
+                            else:  # 小于等于15条记录, 一次返回所有结果
                                 msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=future.name)
                         ret = {"messages":
                                    [{"t": "1",
                                      "msg": msg}
                                     ]
                                }
-                    else:
-                        product = models.Products.objects.filter(pname=para).first()
+                    else:  # 不是期货品种关键字
+                        product = models.Products.objects.filter(pname=para).first()  # 获取期货产品关键字
                         if product:
                             query_name = product.fname
                         else:
                             query_name = para
                         data_all = models.Data.objects.filter(name__istartswith=query_name)
                         if data_all:
+                            counts = data_all.count()
+                            num = 0
+                            t = "1"
                             for data in data_all:
+                                num += 1
                                 if data.dataType == 0:  # 查询结果为股票
                                     rs = "代码:{code}<br>名称:{name}<br>涨幅:{gains}<br>收盘:{closing}<br>成交量:{turnover}<br>总金额:{totalMoney}<br>" \
                                           "{today}压力:{pressure}<br>{today}支撑:{support}<br>{tomorrow}压力:{tPressure}<br>{tomorrow}支撑:{tSupport}<br>"
                                     dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
                                                totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, tPressure=data.tPressure,
                                                tSupport=data.tSupport, today=date2str(data.dataDate), tomorrow=date2str(data.nextDate))
-                                    ret = {"messages":
-                                               [{"t": "0",
-                                                 "msg": rs.format(**dic)}
-                                                ]
-                                           }
+                                    msg = rs.format(**dic)
+                                    t = "0"
+                                    # ret = {"messages":
+                                    #            [{"t": "0",
+                                    #              "msg": rs.format(**dic)}
+                                    #             ]
+                                    #        }
                                     break
-                                if re.match(r'.*\d+\Z', data.name):
-                                    flag = True
-                                    msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=data.name)
-                            if flag:
-                                ret = {"messages":
-                                           [{"t": "1",
-                                             "msg": msg}
-                                            ]
-                                       }
+                                # if re.match(r'.*\d+\Z', data.name):
+                                else:  # 查询结果为期货信息(datatype>=1)
+                                    if counts > 15:  # 结果大于24条, 返回帮助信息
+                                        t = "0"
+                                        msg = "您的关键词不太详细哦，再告诉小美一次吧!"
+                                        break
+                                    if counts <= 15:  # 小于15条, 一次返回所有
+                                        t = "1"
+                                        msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=data.name)
+                                    # else:  # 大于15, 小于24, 分2次返回
+                                    #     if para.endswith("更多"):
+                                    #         print(para, num)
+                                    #         if num >= 12:
+                                    #             msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=data.name)
+                                    #     elif num < 12:
+                                    #         msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=data.name)
+                                    #     else:
+                                    #         more_info = para + "更多"
+                                    #         msg += "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>".format(name=more_info)
+                                    #         break
+                            ret = {"messages":
+                                       [{"t": t,
+                                         "msg": msg}
+                                        ]
+                                   }
                         else:
                             ret = ret_default
     return HttpResponse("%s" % json.dumps(ret))
