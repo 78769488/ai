@@ -17,8 +17,8 @@ from byx import views
 
 urlpatterns = [
     # url(r'^', include(router.urls)),
-    url(r'query', views.query),
-    url(r'^', views.index),
+    url(r'query', views.query, name="query"),
+    url(r'^', views.index, name="index"),
     # 验证登录使用
     url(r'auth', include('rest_framework.urls'))
 ]

@@ -35,7 +35,7 @@ window.onload = function () {
 
     window.setInterval(ai_req_time, 1000);
     // ai_para.value='!@#$%^&*';
-    ai_para.value = 'index';
+    ai_para.value = 'help';
 
     function send_ai_req(para) {
         if (iNow > -1) {
