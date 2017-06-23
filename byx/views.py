@@ -54,6 +54,7 @@ def query(request):
         last_msg = session_last_msg
     else:
         last_msg = para  # 用户最后一次交互上行内容
+    print("session_last_msg===%s" % session_last_msg)
     # 打开首页提示信息
     if para == "help":
         if last_msg == "help":
@@ -259,6 +260,7 @@ def query(request):
     if flag:
         last_msg = para
     request.session['last_msg'] = last_msg
+    print("session_last_msg===%s" % last_msg)
 
     return HttpResponse("%s" % json.dumps(ret))
 
