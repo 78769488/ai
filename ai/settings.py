@@ -199,7 +199,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': os.path.join(BASE_DIR, "log", 'debug.log'),  # 日志输出文件
-            'when': 'h',
+            'when': 'H',
             'interval': 1,
             'encoding': 'utf-8',
             'backupCount': 744,  # 备份份数
@@ -209,7 +209,7 @@ LOGGING = {
             'level': 'ERROR',
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': os.path.join(BASE_DIR, "log", 'error.log'),  # 日志输出文件
-            'when': 'midnight',
+            'when': 'D',
             'interval': 1,
             'encoding': 'utf-8',
             'backupCount': 31,  # 备份份数
@@ -219,7 +219,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': os.path.join(BASE_DIR, "log", 'info.log'),  # 日志输出文件
-            'when': 'midnight',
+            'when': 'D',
             'interval': 1,
             'encoding': 'utf-8',
             'backupCount': 31,  # 备份份数
@@ -237,17 +237,17 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False
         },
-        # 'django.request': {
-        #     # 'handlers': ['debug', 'mail_admins'],
-        #     'handlers': ['debug'],
-        #     'level': 'ERROR',
-        #     'propagate': True,
-        # },
+        'django.request': {
+            # 'handlers': ['debug', 'mail_admins'],
+            'handlers': ['debug'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
         # 对于不在 ALLOWED_HOSTS 中的请求不发送报错邮件
-        # 'django.security.DisallowedHost': {
-        #     'handlers': ['null'],
-        #     'propagate': False,
-        # },
+        'django.security.DisallowedHost': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
         'project.custom': {
             'handlers': ['info'],
             'level': 'INFO',

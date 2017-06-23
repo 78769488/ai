@@ -22,8 +22,8 @@ type_dic = {
     99: "无效上行"
 }
 
-ret_msg = "代码:{code}<br>名称:{name}<br>涨幅:{gains}<br>收盘:{closing}<br>成交量:{turnover}<br>总金额:{totalMoney}<br>" \
-          "{today}压力:{pressure}<br>{today}支撑:{support}<br>{tomorrow}压力:{tPressure}<br>{tomorrow}支撑:{tSupport}<br>"
+ret_msg = "代码: {code}<br>名称: {name}<br>涨幅: {gains}<br>收盘: {closing}<br>成交量: {turnover}<br>总金额: {totalMoney}<br>{" \
+          "today}压力: {pressure}<br>{today}支撑: {support}<br>{tomorrow}压力: {tPressure}<br>{tomorrow}支撑: {tSupport}<br> "
 
 
 def index(request):
@@ -38,8 +38,8 @@ def index(request):
 
 def query(request):
     para = request.GET.get("para")  # 获取用户输入的内容
-    logger.debug("%s-%s" % (para, request))
-    custom_logger.info("%s-%s" % (para, request))
+    logger.debug("%s-%s" % (para, request.method))
+    custom_logger.info("%s-%s" % (para, request.method))
     ret_default = {"messages":
                        [{"t": "0",
                          "msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
@@ -48,32 +48,41 @@ def query(request):
     js_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>"
     hy_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">您还想查询{name}的其它合约吗?(Y)</a>"
     data_type = None
-    last_msg = para  # 用户最后一次交互上行内容
-    session_last_msg = request.session.get("last_msg", "help")
-    print("+++++++", last_msg, session_last_msg)
+    flag = True
+    session_last_msg = request.session.get("last_msg", None)
+    if session_last_msg and session_last_msg != "help":
+        last_msg = session_last_msg
+    else:
+        last_msg = para  # 用户最后一次交互上行内容
     # 打开首页提示信息
-    if para == "help" and session_last_msg == "help":
-        para = request.session.get("last_msg", "help")
-        print("===========", para)
-        ret = {"messages":
-                   [{"t": "0",
-                     "msg": "我是贴心为你服务的客服小美。"
-                     },
-                    {"t": "1",
-                     "msg": "这是否是您需要的问题:<br>"
-                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'宝盈线\');\">宝盈线是什么？<br>"
-                            "</a><a href=\"javascript:void(0);\" onclick=\"set_para(\'铜主力\');\">"
-                            "<font color=#ff1400>铜主力合约</font>的明日压力位和支撑位？</a><br>"
-                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'中国中车\');\">"
-                            "<font color=#ff1400>中国中车</font>的明日压力位和支撑位？</a><br>"
-                     },
-                    {"t": "0",
-                     "msg": "输入关键字查询宝盈线（例如：CU、铜、中国中车、601766）"
-                     }
-                    ]
-               }
-        data_type = 10
-    elif para == "宝盈线":
+    if para == "help":
+        if last_msg == "help":
+            ret = {"messages":
+                       [{"t": "0",
+                         "msg": "我是贴心为你服务的客服小美。"
+                         },
+                        {"t": "1",
+                         "msg": "这是否是您需要的问题:<br>"
+                                "<a href=\"javascript:void(0);\" onclick=\"set_para(\'宝盈线\');\">宝盈线是什么？<br>"
+                                "</a><a href=\"javascript:void(0);\" onclick=\"set_para(\'铜主力\');\">"
+                                "<font color=#ff1400>铜主力合约</font>的明日压力位和支撑位？</a><br>"
+                                "<a href=\"javascript:void(0);\" onclick=\"set_para(\'中国中车\');\">"
+                                "<font color=#ff1400>中国中车</font>的明日压力位和支撑位？</a><br>"
+                         },
+                        {"t": "0",
+                         "msg": "输入关键字查询宝盈线（例如：CU、铜、中国中车、601766）"
+                         }
+                        ]
+                   }
+            logger.debug(ret)
+            custom_logger.info(ret)
+            data_count(10)
+            request.session['last_msg'] = last_msg
+            return HttpResponse("%s" % json.dumps(ret))
+        else:
+            para = session_last_msg
+
+    if para == "宝盈线":
         data_type = 11  # 固定内容回复
         ret = {"messages":
                    [{"t": "0",
@@ -93,7 +102,7 @@ def query(request):
                 ret = {"messages":
                            [{"t": "0", "msg": "错误的股票代码!"}]
                        }
-                last_msg = "help"
+                flag = False
         else:  # 非数字--> 查询股票或期货
             # 先匹配期货信息
             if len(para) > 2 and para.endswith("主力"):  # 查询主力合约
@@ -124,7 +133,7 @@ def query(request):
                     data_type = 12
                 else:
                     data_type = 99
-                    last_msg = "help"
+                    flag = False
                     ret = ret_default
             elif re.match(r'^.+\d+$', para):  # 以中文开头以数字结尾的字符串, 为期货信息, 如果铜1711
                 new_para = re.search(r'\d+', para).group()
@@ -149,9 +158,9 @@ def query(request):
                                     ]
                                }
                     else:
-                        last_msg = "help"
                         ret = ret_default
                         data_type = 99
+                        flag = False
                 else:  # 先获取期货品种信息
                     if para.endswith("更多"):
                         new_para = para.replace("更多", "")
@@ -161,8 +170,8 @@ def query(request):
 
                     if futures.count() >= 24:
                         ret = ret_default
-                        last_msg = "help"
                         data_type = 99
+                        flag = False
                     elif futures.count() >= 1:
                         last_msg = new_para
                         data_type = 12
@@ -195,7 +204,6 @@ def query(request):
                         else:
                             query_name = para
                         data_all = models.Data.objects.filter(name__istartswith=query_name)
-
                         if data_all:
                             counts = data_all.count()
                             num = 0
@@ -216,14 +224,24 @@ def query(request):
                                     break
                                 # if re.match(r'.*\d+\Z', data.name):
                                 else:  # 查询结果为期货信息(datatype>=1)
-                                    if counts > 15:  # 结果大于24条, 返回帮助信息
+                                    data_type = data.dataType
+                                    if counts == 1:
+                                        dic = dict(code=data.code, name=data.name, gains=data.gains,
+                                                   closing=data.closing, turnover=data.turnover,
+                                                   totalMoney=data.totalMoney, pressure=data.pressure,
+                                                   support=data.support, tPressure=data.tPressure,
+                                                   tSupport=data.tSupport, today=date2str(data.dataDate),
+                                                   tomorrow=date2str(data.nextDate), dataType=data.dataType)
+                                        msg = ret_msg.format(**dic)
+                                        t = "0"
+                                        break
+                                    if counts > 20:  # 结果大于20条, 返回帮助信息
                                         t = "0"
                                         msg = "您的关键词不太详细哦，再告诉小美一次吧!"
                                         data_type = 99
-                                        last_msg = "help"
+                                        flag = False
                                         break
-                                    if counts <= 15:  # 小于15条, 一次返回所有
-                                        data_type = data.dataType
+                                    if counts <= 20:  # 小于20条, 一次返回所有
                                         t = "1"
                                         msg += js_msg.format(name=data.name)
                             ret = {"messages":
@@ -238,6 +256,8 @@ def query(request):
     custom_logger.info(ret)
     if data_type:
         data_count(data_type)
+    if flag:
+        last_msg = para
     request.session['last_msg'] = last_msg
 
     return HttpResponse("%s" % json.dumps(ret))
