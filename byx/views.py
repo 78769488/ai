@@ -57,33 +57,33 @@ def query(request):
     logger.debug("session_last_msg===%s" % session_last_msg)
     # 打开首页提示信息
     if para == "help":
-        if last_msg == "help":
-            ret = {"messages":
-                       [{"t": "0",
-                         "msg": "我是贴心为你服务的客服小美。"
-                         },
-                        {"t": "1",
-                         "msg": "这是否是您需要的问题:<br>"
-                                "<a href=\"javascript:void(0);\" onclick=\"set_para(\'宝盈线\');\">宝盈线是什么？<br>"
-                                "</a><a href=\"javascript:void(0);\" onclick=\"set_para(\'铜主力\');\">"
-                                "<font color=#ff1400>铜主力合约</font>的明日压力位和支撑位？</a><br>"
-                                "<a href=\"javascript:void(0);\" onclick=\"set_para(\'中国中车\');\">"
-                                "<font color=#ff1400>中国中车</font>的明日压力位和支撑位？</a><br>"
-                         },
-                        {"t": "0",
-                         "msg": "输入关键字查询宝盈线（例如：CU、铜、中国中车、601766）"
-                         }
-                        ]
-                   }
-            logger.debug(ret)
-            custom_logger.info(ret)
-            data_count(10)
-            request.session['last_msg'] = last_msg
-            return HttpResponse("%s" % json.dumps(ret))
-        else:
-            para = session_last_msg
+        # if last_msg == "help":
+        ret = {"messages":
+                   [{"t": "0",
+                     "msg": "我是贴心为你服务的客服小美。"
+                     },
+                    {"t": "1",
+                     "msg": "这是否是您需要的问题:<br>"
+                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'宝盈线\');\">宝盈线是什么？<br>"
+                            "</a><a href=\"javascript:void(0);\" onclick=\"set_para(\'铜主力\');\">"
+                            "<font color=#ff1400>铜主力合约</font>的明日压力位和支撑位？</a><br>"
+                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'中国中车\');\">"
+                            "<font color=#ff1400>中国中车</font>的明日压力位和支撑位？</a><br>"
+                     },
+                    {"t": "0",
+                     "msg": "输入关键字查询宝盈线（例如：CU、铜、中国中车、601766）"
+                     }
+                    ]
+               }
+        #     logger.debug(ret)
+        #     custom_logger.info(ret)
+        #     data_count(10)
+        #     request.session['last_msg'] = last_msg
+        #     return HttpResponse("%s" % json.dumps(ret))
+        # else:
+        #     para = session_last_msg
 
-    if para == "宝盈线":
+    elif para == "宝盈线":
         data_type = 11  # 固定内容回复
         ret = {"messages":
                    [{"t": "0",
