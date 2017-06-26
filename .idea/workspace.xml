@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0dd7fec1-8180-4591-9969-c4db47358b34" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ai/settings.py" afterPath="$PROJECT_DIR$/ai/settings.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/byx/views.py" afterPath="$PROJECT_DIR$/byx/views.py" />
     </list>
     <ignored path="log/info.log" />
@@ -29,8 +28,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/byx/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="209">
-              <caret line="11" column="12" lean-forward="true" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
+            <state relative-caret-position="205">
+              <caret line="20" column="14" lean-forward="true" selection-start-line="20" selection-start-column="14" selection-end-line="20" selection-end-column="14" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -83,7 +82,6 @@
       <find>$keyzdjj</find>
       <find>flag</find>
       <find>types</find>
-      <find>98</find>
       <find>&quot;&lt;a href=\&quot;javascript:void(0);\&quot; onclick=\&quot;set_para(\'{name}\');\&quot;&gt;{name}&lt;/a&gt;&lt;br&gt;&quot;</find>
       <find>js_msg</find>
       <find>hy_msg</find>
@@ -102,6 +100,7 @@
       <find># la</find>
       <find>data_type = 99</find>
       <find>DEBU</find>
+      <find>98</find>
     </findStrings>
     <replaceStrings>
       <replace>'</replace>
@@ -702,7 +701,14 @@
       <option name="project" value="LOCAL" />
       <updated>1498462352338</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="0626&#10;保留session记录功能,但是不判断用户最后一次上行内容">
+      <created>1498467909018</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1498467909018</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TodoView">
@@ -1111,8 +1117,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/byx/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="11" column="12" lean-forward="true" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
+        <state relative-caret-position="205">
+          <caret line="20" column="14" lean-forward="true" selection-start-line="20" selection-start-column="14" selection-end-line="20" selection-end-column="14" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
