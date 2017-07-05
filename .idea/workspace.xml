@@ -29,7 +29,7 @@
         <entry file="file://$PROJECT_DIR$/byx/views.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="342">
-              <caret line="93" column="16" lean-forward="true" selection-start-line="93" selection-start-column="16" selection-end-line="93" selection-end-column="16" />
+              <caret line="90" column="84" lean-forward="false" selection-start-line="90" selection-start-column="84" selection-end-line="90" selection-end-column="84" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -796,7 +796,14 @@
       <option name="project" value="LOCAL" />
       <updated>1499268932742</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="0705:&#10;修改首次回复语格式">
+      <created>1499269073654</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1499269073654</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TodoView">
@@ -1182,7 +1189,7 @@
     <entry file="file://$PROJECT_DIR$/byx/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="342">
-          <caret line="93" column="16" lean-forward="true" selection-start-line="93" selection-start-column="16" selection-end-line="93" selection-end-column="16" />
+          <caret line="90" column="84" lean-forward="false" selection-start-line="90" selection-start-column="84" selection-end-line="90" selection-end-column="84" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>

@@ -21,8 +21,8 @@ type_dic = {
     99: "无效上行"
 }
 
-ret_msg = "<font color=#3366cc>代码: {code}<br>名称: {name}<br>涨幅: {gains}<br>收盘: {closing}<br>成交量: {turnover}<br>总金额: {totalMoney}<br>{" \
-          "today}压力: {pressure}<br>{today}支撑: {support}<br>{tomorrow}压力: {tPressure}<br>{tomorrow}支撑: {tSupport}<br> </font>"
+ret_msg = "代码: {code}<br>名称: {name}<br>涨幅: {gains}<br>收盘: {closing}<br>成交量: {turnover}<br>总金额: {totalMoney}<br>{" \
+          "today}压力: {pressure}<br>{today}支撑: {support}<br>{tomorrow}压力: {tPressure}<br>{tomorrow}支撑: {tSupport}<br>"
 
 
 def index(request):
@@ -45,7 +45,7 @@ def query(request):
                         ]
                    }
     js_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>"
-    hy_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">您还想查询{name}的其它合约吗?(Y)</a>"
+    hy_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\"><font color=#3366cc>您还想查询{name}的其它合约吗?(Y)</font></a>"
     data_type = None
     flag = True
     session_last_msg = request.session.get("last_msg", None)
@@ -88,7 +88,7 @@ def query(request):
         data_type = 11  # 固定内容回复
         ret = {"messages":
                    [{"t": "0",
-                     "msg": "<font color=#3366cc>宝盈线是由每日支撑位和压力位相连接构成的策略图形。根据趋势信号预判每日支撑位和压力位，为您提供合理的投资建议。</font>"
+                     "msg": "宝盈线是由每日支撑位和压力位相连接构成的策略图形。根据趋势信号预判每日支撑位和压力位，为您提供合理的投资建议。"
                      }
                     ]
                }
