@@ -44,7 +44,7 @@ def query(request):
                          "msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
                         ]
                    }
-    js_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\">{name}</a><br>"
+    js_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\"><font color=#3366cc>{name}</font></a><br>"
     hy_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\"><font color=#3366cc>您还想查询{name}的其它合约吗?(Y)</font></a>"
     data_type = None
     flag = True
