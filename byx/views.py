@@ -63,11 +63,12 @@ def query(request):
                      },
                     {"t": "1",
                      "msg": "以下是否为您需要的问题：<br>"
-                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'宝盈线\');\">宝盈线是什么？</a><br>"
-                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'铜主力\');\">铜主力合约的明日压力位和支撑位？</a><br>"
-                     # "<font color=#ff1400>铜主力合约</font>的明日压力位和支撑位？</a><br>"
-                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'中国中车\');\">中国中车的明日压力位和支撑位？</a><br>"
-                     # "<font color=#ff1400>中国中车</font>的明日压力位和支撑位？</a><br>"
+                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'宝盈线\');\">"
+                            "<font color=#3366cc>宝盈线是什么？</font></a><br>"
+                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'铜主力\');\">"
+                            "<font color=#3366cc>铜主力合约的明日压力位和支撑位？</font></a><br>"
+                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'中国中车\');\">"
+                            "<font color=#3366cc>中国中车的明日压力位和支撑位？</font></a><br>"
                             "点击上方蓝色问题或者输入关键字查询（例如：宝盈线、铜主力、美尔雅、600107）"
                      },
                     # {"t": "0",
