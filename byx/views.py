@@ -21,8 +21,8 @@ type_dic = {
     99: "无效上行"
 }
 
-ret_msg = "代码: {code}<br>名称: {name}<br>涨幅: {gains}<br>收盘: {closing}<br>成交量: {turnover}<br>总金额: {totalMoney}<br>{" \
-          "today}压力: {pressure}<br>{today}支撑: {support}<br>{tomorrow}压力: {tPressure}<br>{tomorrow}支撑: {tSupport}<br> "
+ret_msg = "<font color=#3366cc>代码: {code}<br>名称: {name}<br>涨幅: {gains}<br>收盘: {closing}<br>成交量: {turnover}<br>总金额: {totalMoney}<br>{" \
+          "today}压力: {pressure}<br>{today}支撑: {support}<br>{tomorrow}压力: {tPressure}<br>{tomorrow}支撑: {tSupport}<br> </font>"
 
 
 def index(request):
