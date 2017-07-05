@@ -62,7 +62,7 @@ def query(request):
                      "msg": "我是贴心为你服务的客服小美。"
                      },
                     {"t": "1",
-                     "msg": "以下是否为您需要的问题:<br>"
+                     "msg": "以下是否为您需要的问题：<br>"
                             "<a href=\"javascript:void(0);\" onclick=\"set_para(\'宝盈线\');\">宝盈线是什么？</a><br>"
                             "<a href=\"javascript:void(0);\" onclick=\"set_para(\'铜主力\');\">铜主力合约的明日压力位和支撑位？</a><br>"
                      # "<font color=#ff1400>铜主力合约</font>的明日压力位和支撑位？</a><br>"
