@@ -36,7 +36,7 @@ def index(request):
 
 
 def query(request):
-    logger.debug(help(request.COOKIES, request.body, request.get_host(), request.get_port()))
+    logger.debug("%s\n%s\n%s\n%s" % (request.COOKIES, request.body, request.get_host(), request.get_port()))
     para = request.GET.get("para")  # 获取用户输入的内容
     logger.debug("%s-%s" % (para, request.method))
     custom_logger.info("%s-%s" % (para, request.method))
