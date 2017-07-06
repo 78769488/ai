@@ -219,7 +219,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': os.path.join(BASE_DIR, "log", 'info.log'),  # 日志输出文件
-            'when': 'D',
+            'when': 'midnight',
             'interval': 1,
             'encoding': 'utf-8',
             'backupCount': 31,  # 备份份数
