@@ -3,7 +3,7 @@ import json
 import logging
 from byx import models
 from datetime import datetime
-# from django.db import connection
+from django.db import connection
 from django.shortcuts import render, HttpResponse
 
 logger = logging.getLogger('django')
@@ -27,19 +27,20 @@ ret_msg = "代码: {code}<br>名称: {name}<br>涨幅: {gains}<br>收盘: {closi
 
 def index(request):
     data_count(10)  # 用户首次上行
+    logger.debug("-" * 100)
+    for k, v in request.META.items():
+        logger.debug("%s: %s" % (k, v))
     logger.debug(request)
-    custom_logger.info(request)
-    for key in request.COOKIES:
-        print(key, request.COOKIES.get(key, "xxxxx"))
-    return render(request,
-                  "ai.html", )
+    # custom_logger.info(request)
+    custom_logger.info("用户打开会话页面：%s" % request)
+    logger.debug("-" * 100)
+    return render(request, "ai.html", )
 
 
 def query(request):
-    logger.debug("%s\n%s\n%s\n%s" % (request.COOKIES, request.body, request.get_host(), request.get_port()))
     para = request.GET.get("para")  # 获取用户输入的内容
-    logger.debug("%s-%s" % (para, request.method))
-    custom_logger.info("%s-%s" % (para, request.method))
+    logger.debug("\n用户上行内容：%s" % para)
+    custom_logger.info("用户上行内容：%s" % para)
     ret_default = {"messages":
                        [{"t": "0",
                          "msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
@@ -256,7 +257,7 @@ def query(request):
                             ret = ret_default
                             data_type = 99
     logger.debug(ret)
-    custom_logger.info(ret)
+    custom_logger.info("返回消息内容：%s" % ret)
     if data_type:
         data_count(data_type)
     if flag:
@@ -277,6 +278,7 @@ def query_stock(para):
     msg = "您的关键词不太详细哦，再告诉小美一次吧!"
     try:
         data = models.Data.objects.filter(code=para).first()
+        logger.debug("股票查询：%s" % connection.queries)
         if data:
             dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
                        totalMoney=data.totalMoney, pressure=data.pressure, support=data.support,
@@ -301,6 +303,7 @@ def query_futures_name(para):
     msg = "您的关键词不太详细哦，再告诉小美一次吧!"
     try:
         data = models.Data.objects.filter(name__iendswith=para).first()
+        logger.debug("期货主力合约及指数(名称)查询：%s" % connection.queries)
         if data:
             dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
                        totalMoney=data.totalMoney, pressure=data.pressure, support=data.support,
@@ -325,6 +328,7 @@ def query_futures_code(para):
     msg = "您的关键词不太详细哦，再告诉小美一次吧!"
     try:
         data = models.Data.objects.filter(code__icontains=para).first()
+        logger.debug("期货主力合约及指数(代码)查询：%s" % connection.queries)
         if data:
             dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
                        totalMoney=data.totalMoney, pressure=data.pressure, support=data.support,
