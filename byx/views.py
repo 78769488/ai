@@ -36,6 +36,7 @@ def index(request):
 
 
 def query(request):
+    logger.debug(help(request))
     para = request.GET.get("para")  # 获取用户输入的内容
     logger.debug("%s-%s" % (para, request.method))
     custom_logger.info("%s-%s" % (para, request.method))

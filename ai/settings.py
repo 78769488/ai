@@ -25,7 +25,7 @@ SECRET_KEY = 'nmlwm&9dh8xc+rw+b8y0^6coa&k%upu8uk!u8_2wwnhg37nm-#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*",]
+ALLOWED_HOSTS = ["*", ]
 
 
 # Application definition
@@ -60,8 +60,7 @@ ROOT_URLCONF = 'ai.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
