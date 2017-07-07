@@ -207,7 +207,9 @@ def query(request):
                             query_name = product.fname
                         else:
                             query_name = para
-                        data_all = models.Data.objects.filter(name__istartswith=query_name)
+                        data_all = models.Data.objects.filter(name__istartswith=query_name, dataType__gte=1)
+                        if not data_all:
+                            data_all = models.Data.objects.filter(name__istartswith=query_name, dataType=0)
                         if data_all:
                             counts = data_all.count()
                             num = 0
