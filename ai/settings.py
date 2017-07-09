@@ -221,11 +221,12 @@ LOGGING = {
         'info': {  # 记录到日志文件(需要创建对应的目录，否则会出错), when='h', interval=1, backupCount=0
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, "log", 'custom_info.log'),  # 日志输出文件
+            # 'filename': os.path.join(BASE_DIR, "log", 'custom_info.log'),  # 日志输出文件
+            'filename': os.path.join("/home/tomcat-7/res_mfc/ailog", 'custom_info.log'),  # 日志输出文件
             'when': 'midnight',
             'interval': 1,
             'encoding': 'utf-8',
-            'backupCount': 31,  # 备份份数
+            'backupCount': 365,  # 备份份数
             'formatter': 'custom',  # 使用哪种formatters日志格式
         },
         'console': {  # 输出到控制台

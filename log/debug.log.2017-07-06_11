@@ -1,0 +1,52 @@
+2017-07-06 11:13:39,059 [basehttp.py:124] [WARNING]- "GET / HTTP/1.1" 404 74
+2017-07-06 11:13:44,855 [basehttp.py:124] [INFO]- "GET /byx HTTP/1.1" 301 0
+2017-07-06 11:13:45,239 [views.py:30] [DEBUG]- <WSGIRequest: GET '/byx/'>
+2017-07-06 11:13:45,383 [basehttp.py:124] [INFO]- "GET /byx/ HTTP/1.1" 200 950
+2017-07-06 11:13:45,410 [basehttp.py:124] [WARNING]- "GET /static/css/ai.css HTTP/1.1" 404 91
+2017-07-06 11:13:45,417 [basehttp.py:124] [WARNING]- "GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 404 103
+2017-07-06 11:13:45,425 [basehttp.py:124] [WARNING]- "GET /static/js/jquery.cookie.js HTTP/1.1" 404 100
+2017-07-06 11:13:45,426 [basehttp.py:124] [WARNING]- "GET /static/js/ai.js HTTP/1.1" 404 89
+2017-07-06 11:15:28,223 [basehttp.py:124] [INFO]- "GET /byx HTTP/1.1" 301 0
+2017-07-06 11:15:28,655 [views.py:30] [DEBUG]- <WSGIRequest: GET '/byx/'>
+2017-07-06 11:15:28,658 [basehttp.py:124] [INFO]- "GET /byx/ HTTP/1.1" 200 950
+2017-07-06 11:15:28,707 [basehttp.py:124] [WARNING]- "GET /static/css/ai.css HTTP/1.1" 404 91
+2017-07-06 11:15:28,712 [basehttp.py:124] [WARNING]- "GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 404 103
+2017-07-06 11:15:28,716 [basehttp.py:124] [WARNING]- "GET /static/js/jquery.cookie.js HTTP/1.1" 404 100
+2017-07-06 11:15:28,716 [basehttp.py:124] [WARNING]- "GET /static/js/ai.js HTTP/1.1" 404 89
+2017-07-06 11:15:28,949 [basehttp.py:124] [WARNING]- "GET /favicon.ico HTTP/1.1" 404 85
+2017-07-06 11:16:03,128 [basehttp.py:124] [WARNING]- "GET /static/css/ai.css HTTP/1.1" 404 91
+2017-07-06 11:16:09,355 [views.py:30] [DEBUG]- <WSGIRequest: GET '/byx/'>
+2017-07-06 11:16:09,357 [basehttp.py:124] [INFO]- "GET /byx/ HTTP/1.1" 200 950
+2017-07-06 11:16:09,444 [basehttp.py:124] [WARNING]- "GET /static/css/ai.css HTTP/1.1" 404 91
+2017-07-06 11:16:09,459 [basehttp.py:124] [WARNING]- "GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 404 103
+2017-07-06 11:16:09,462 [basehttp.py:124] [WARNING]- "GET /static/js/jquery.cookie.js HTTP/1.1" 404 100
+2017-07-06 11:16:09,464 [basehttp.py:124] [WARNING]- "GET /static/js/ai.js HTTP/1.1" 404 89
+2017-07-06 11:19:23,008 [views.py:30] [DEBUG]- <WSGIRequest: GET '/byx/'>
+2017-07-06 11:19:23,010 [basehttp.py:124] [INFO]- "GET /byx/ HTTP/1.1" 200 950
+2017-07-06 11:19:23,134 [basehttp.py:124] [WARNING]- "GET /static/css/ai.css HTTP/1.1" 404 91
+2017-07-06 11:19:23,185 [basehttp.py:124] [WARNING]- "GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 404 103
+2017-07-06 11:19:23,199 [basehttp.py:124] [WARNING]- "GET /static/js/jquery.cookie.js HTTP/1.1" 404 100
+2017-07-06 11:19:23,218 [basehttp.py:124] [WARNING]- "GET /static/js/ai.js HTTP/1.1" 404 89
+2017-07-06 11:19:42,465 [basehttp.py:124] [WARNING]- "GET /static/css/ai.css HTTP/1.1" 404 91
+2017-07-06 11:20:27,605 [views.py:30] [DEBUG]- <WSGIRequest: GET '/byx/ai.html'>
+2017-07-06 11:20:27,607 [basehttp.py:124] [INFO]- "GET /byx/ai.html HTTP/1.1" 200 950
+2017-07-06 11:20:27,659 [basehttp.py:124] [WARNING]- "GET /static/css/ai.css HTTP/1.1" 404 91
+2017-07-06 11:20:27,669 [basehttp.py:124] [WARNING]- "GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 404 103
+2017-07-06 11:20:27,681 [basehttp.py:124] [WARNING]- "GET /static/js/jquery.cookie.js HTTP/1.1" 404 100
+2017-07-06 11:20:27,682 [basehttp.py:124] [WARNING]- "GET /static/js/ai.js HTTP/1.1" 404 89
+2017-07-06 11:22:42,618 [views.py:30] [DEBUG]- <WSGIRequest: GET '/byx/ai.html'>
+2017-07-06 11:22:42,630 [basehttp.py:124] [INFO]- "GET /byx/ai.html HTTP/1.1" 200 950
+2017-07-06 11:22:42,676 [basehttp.py:124] [WARNING]- "GET /static/css/ai.css HTTP/1.1" 404 91
+2017-07-06 11:22:42,680 [basehttp.py:124] [WARNING]- "GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 404 103
+2017-07-06 11:22:42,691 [basehttp.py:124] [WARNING]- "GET /static/js/jquery.cookie.js HTTP/1.1" 404 100
+2017-07-06 11:22:42,707 [basehttp.py:124] [WARNING]- "GET /static/js/ai.js HTTP/1.1" 404 89
+2017-07-06 11:22:42,715 [basehttp.py:124] [WARNING]- "GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 404 103
+2017-07-06 11:22:42,723 [basehttp.py:124] [WARNING]- "GET /static/js/jquery.cookie.js HTTP/1.1" 404 100
+2017-07-06 11:22:42,733 [basehttp.py:124] [WARNING]- "GET /static/js/ai.js HTTP/1.1" 404 89
+2017-07-06 11:42:01,753 [basehttp.py:124] [WARNING]- "GET / HTTP/1.1" 404 74
+2017-07-06 11:42:07,472 [views.py:30] [DEBUG]- <WSGIRequest: GET '/byx/'>
+2017-07-06 11:42:07,477 [basehttp.py:124] [INFO]- "GET /byx/ HTTP/1.1" 200 950
+2017-07-06 11:42:07,489 [basehttp.py:124] [WARNING]- "GET /static/css/ai.css HTTP/1.1" 404 91
+2017-07-06 11:42:07,489 [basehttp.py:124] [WARNING]- "GET /static/js/jquery-3.2.1.min.js HTTP/1.1" 404 103
+2017-07-06 11:42:07,493 [basehttp.py:124] [WARNING]- "GET /static/js/jquery.cookie.js HTTP/1.1" 404 100
+2017-07-06 11:42:07,495 [basehttp.py:124] [WARNING]- "GET /static/js/ai.js HTTP/1.1" 404 89
