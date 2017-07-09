@@ -226,7 +226,7 @@ LOGGING = {
             'when': 'midnight',
             'interval': 1,
             'encoding': 'utf-8',
-            'backupCount': 365,  # 备份份数
+            'backupCount': 366,  # 备份份数
             'formatter': 'custom',  # 使用哪种formatters日志格式
         },
         'console': {  # 输出到控制台
