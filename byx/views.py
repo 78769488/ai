@@ -381,6 +381,7 @@ def write_csv(res):
                 log_msg += msg.replace("<br>", "\n")
             else:  # t == 1, 带链接, 设置了字体颜色
                 pattern = r'<font .*?>(.*?)</font>'
+                logger.debug("解析结果:%s" % msg.replace("'", ""))
                 items = re.findall(msg.replace("'", ""), pattern, re.S | re.M)
                 logger.debug("解析结果:%s" % items)
 
