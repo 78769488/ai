@@ -383,6 +383,7 @@ def write_csv(res):
                 pattern = r'<font .*?>(.*?)</font>'
                 items = re.findall(msg, pattern, re.S | re.M)
                 logger.debug("解析结果:%s" % items)
+
                 for item in items:
                     log_msg += item
     except Exception as e:
