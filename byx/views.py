@@ -376,17 +376,13 @@ def write_csv(res):
         for message in messages:
             t = message.get("t")
             msg = """%s""" % message.get("msg")
-            logger.debug(msg)
             if t == "0":
                 log_msg += msg.replace("<br>", "\n")
             else:  # t == 1, 带链接, 设置了字体颜色
                 pattern = r'<font .*?>(.*?)</font>'
-                logger.debug("解析结果:%s" % msg.replace("'", ""))
                 items = re.findall(pattern, msg.replace("'", ""), re.S | re.M)
                 logger.debug("解析结果:%s" % items)
-
-                for item in items:
-                    log_msg += item
+                log_msg = "\n".join(items)
     except Exception as e:
         logger.debug(e)
         log_msg = e
