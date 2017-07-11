@@ -370,7 +370,7 @@ def data_count(data_type):
 
 
 def write_csv(res):
-    log_msg = "\n"
+    log_msg = ""
     try:
         messages = res.get("messages")
         for message in messages:
@@ -382,7 +382,7 @@ def write_csv(res):
                 pattern = r'<font .*?>(.*?)</font>'
                 items = re.findall(pattern, msg.replace("'", ""), re.S | re.M)
                 logger.debug("解析结果:%s" % items)
-                log_msg = "\n".join(items)
+                log_msg += "\n".join(items)
     except Exception as e:
         logger.debug(e)
         log_msg = e
