@@ -375,7 +375,7 @@ def write_csv(res):
         messages = res.get("messages")
         for message in messages:
             t = message.get("t")
-            msg = message.get("msg")
+            msg = """%s""" % message.get("msg")
             logger.debug(msg)
             if t == "0":
                 log_msg += msg.replace("<br>", "\n")
