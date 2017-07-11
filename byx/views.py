@@ -381,6 +381,7 @@ def write_csv(res):
             else:  # t == 1, 带链接, 设置了字体颜色
                 pattern = r'<font .*?>(.*?)</font>'
                 items = re.findall(msg, pattern, re.S | re.M)
+                logger.debug("解析结果:%s" % "-".join(items))
                 for item in items:
                     log_msg += item
     except Exception as e:
