@@ -376,6 +376,7 @@ def write_csv(res):
         for message in messages:
             t = message.get("t")
             msg = message.get("msg")
+            logger.debug(msg)
             if t == "0":
                 log_msg += msg.replace("<br>", "\n")
             else:  # t == 1, 带链接, 设置了字体颜色
