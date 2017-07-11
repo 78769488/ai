@@ -172,7 +172,7 @@ LOGGING = {
             'format': '%(asctime)s [%(filename)s:%(lineno)d] [%(levelname)s]- %(message)s'},
         'custom': {
             # 'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}
-            'format': '"%(asctime)s" - "%(message)s"'}
+            'format': '"%(asctime)s","%(message)s"'}
     },
     'filters': {  # 过滤器
         'require_debug_false': {
