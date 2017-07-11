@@ -172,7 +172,7 @@ LOGGING = {
             'format': '%(asctime)s [%(filename)s:%(lineno)d] [%(levelname)s]- %(message)s'},
         'custom': {
             # 'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}
-            'format': '%(asctime)s - %(message)s'}
+            'format': '"%(asctime)s" - "%(message)s"'}
     },
     'filters': {  # 过滤器
         'require_debug_false': {
@@ -222,7 +222,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
             # 'filename': os.path.join(BASE_DIR, "log", 'custom_info.log'),  # 日志输出文件
-            'filename': os.path.join("/home/tomcat-7/res_mfc/ailog", 'custom_info.log'),  # 日志输出文件
+            'filename': os.path.join("/home/tomcat-7/res_mfc/ailog", 'custom_info.csv'),  # 日志输出文件
             'when': 'midnight',
             'interval': 1,
             'encoding': 'utf-8',

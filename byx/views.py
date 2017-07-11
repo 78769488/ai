@@ -259,7 +259,8 @@ def query(request):
                             ret = ret_default
                             data_type = 99
     logger.debug(ret)
-    custom_logger.info("返回消息内容：%s" % ret)
+    # custom_logger.info("返回消息内容：%s" % ret)
+    write_csv(ret)
     if data_type:
         data_count(data_type)
     if flag:
@@ -366,3 +367,24 @@ def data_count(data_type):
             models.Tj.objects.create(type=data_type, date=current_date, counts=1, name=type_dic.get(data_type, "无效上行"))
     except Exception as e:
         logger.error(e)
+
+
+def write_csv(res):
+    log_msg = "\n"
+    try:
+        messages = res.get("messages")
+        for message in messages:
+            t = message.get("t")
+            msg = message.get("msg")
+            if t == "0":
+                log_msg += msg.replace("<br>", "\n")
+            else:  # t == 1, 带链接, 设置了字体颜色
+                pattern = r'<font .*?>(.*?)</font>'
+                items = re.findall(msg, pattern, re.S | re.M)
+                for item in items:
+                    log_msg += item
+    except Exception as e:
+        logger.debug(e)
+        log_msg = e
+    finally:
+        custom_logger.info(log_msg)
