@@ -225,7 +225,8 @@ LOGGING = {
             'filename': os.path.join("/home/tomcat-7/res_mfc/ailog", 'custom_info.csv'),  # 日志输出文件
             'when': 'midnight',
             'interval': 1,
-            'encoding': 'utf-8',
+            # 'encoding': 'utf-8',
+            'encoding': 'gbk',
             'backupCount': 366,  # 备份份数
             'formatter': 'custom',  # 使用哪种formatters日志格式
         },
