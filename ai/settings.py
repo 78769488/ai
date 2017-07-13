@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import logging
-from utils.MyTimedRotatingFileHandler import MyTimedRotatingFileHandler
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -214,7 +213,7 @@ LOGGING = {
             'level': 'ERROR',
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': os.path.join(BASE_DIR, "log", 'error.log'),  # 日志输出文件
-            'when': 'h',
+            'when': 'midnight',
             'interval': 1,
             'encoding': 'utf-8',
             'backupCount': 31,  # 备份份数
@@ -223,14 +222,13 @@ LOGGING = {
         'info': {  # 记录到日志文件(需要创建对应的目录，否则会出错), when='h', interval=1, backupCount=0
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            # 'class': 'MyTimedRotatingFileHandler',
             # 'filename': os.path.join(BASE_DIR, "log", 'custom_info.log'),  # 日志输出文件
             'filename': os.path.join(CUSTOM_INFO_LOG, 'custom_info.csv'),  # 日志输出文件
             'when': 'midnight',
             'interval': 1,
             # 'encoding': 'utf-8',
             'encoding': 'gbk',
-            'backupCount': 366,  # 备份份数
+            'backupCount': 31,  # 备份份数
             'formatter': 'custom',  # 使用哪种formatters日志格式
         },
         'console': {  # 输出到控制台
