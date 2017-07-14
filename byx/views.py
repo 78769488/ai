@@ -6,6 +6,7 @@ from datetime import datetime
 from django.db import connection
 from django.shortcuts import render, HttpResponse
 
+
 logger = logging.getLogger('django')
 custom_logger = logging.getLogger('project.custom')
 
@@ -31,7 +32,6 @@ def index(request):
     for k, v in request.META.items():
         logger.debug("%s: %s" % (k, v))
     logger.debug(request)
-    # custom_logger.info(request)
     custom_logger.info("用户打开会话页面：%s" % request)
     logger.debug("-" * 100)
     return render(request, "ai.html", )
@@ -39,13 +39,18 @@ def index(request):
 
 def query(request):
     para = request.GET.get("para")  # 获取用户输入的内容
-    logger.debug("\n用户上行内容：%s" % para)
-    custom_logger.info("用户上行内容：%s" % para)
-    ret_default = {"messages":
-                       [{"t": "0",
-                         "msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
-                        ]
-                   }
+    logger.debug("用户上行内容：%s" % para)
+    custom_log_msg = ""
+    custom_log_msg += para
+    custom_log_msg += ","
+    # custom_logger.info("%s" % para)
+    para = para.upper()
+    ret_default = {
+        "messages":
+            [{"t": "0",
+              "msg": "您的关键词不太详细哦，再告诉小美一次吧!"}
+             ]
+    }
     js_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\"><font color=#3366cc>{name}</font></a><br>"
     hy_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\"><font color=#3366cc>您还想查询{name}的其它合约吗?(Y)</font></a>"
     data_type = None
@@ -57,36 +62,29 @@ def query(request):
         last_msg = para  # 用户最后一次交互上行内容
     logger.debug("session_last_msg===%s" % session_last_msg)
     # 打开首页提示信息
-    if para == "help":
+    if para == "HELP":
+        logging.debug(para)
         # if last_msg == "help":
-        ret = {"messages":
-                   [{"t": "0",
-                     "msg": "我是贴心为你服务的客服小美。"
-                     },
-                    {"t": "1",
-                     "msg": "以下是否为您需要的问题：<br>"
-                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'宝盈线\');\">"
-                            "<font color=#3366cc>宝盈线是什么？</font></a><br>"
-                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'铜主力\');\">"
-                            "<font color=#3366cc>铜主力合约的明日压力位和支撑位？</font></a><br>"
-                            "<a href=\"javascript:void(0);\" onclick=\"set_para(\'中国中车\');\">"
-                            "<font color=#3366cc>中国中车的明日压力位和支撑位？</font></a><br>"
-                            "点击上方蓝色问题或者输入关键字查询（例如：宝盈线、铜主力、美尔雅、600107）"
-                     },
-                    # {"t": "0",
-                    #  "msg": "输入关键字查询宝盈线（例如：CU、铜、中国中车、601766）"
-                    #  }
-                    ]
-               }
-        #     logger.debug(ret)
-        #     custom_logger.info(ret)
-        #     data_count(10)
-        #     request.session['last_msg'] = last_msg
-        #     return HttpResponse("%s" % json.dumps(ret))
-        # else:
-        #     para = session_last_msg
+        ret = {
+            "messages":
+                [{"t": "0",
+                  "msg": "我是贴心为你服务的客服小美。"
+                  },
+                 {"t": "1",
+                  "msg": "以下是否为您需要的问题：<br>"
+                         "<a href=\"javascript:void(0);\" onclick=\"set_para(\'宝盈线\');\">"
+                         "<font color=#3366cc>宝盈线是什么？</font></a><br>"
+                         "<a href=\"javascript:void(0);\" onclick=\"set_para(\'铜主力\');\">"
+                         "<font color=#3366cc>铜主力合约的明日压力位和支撑位？</font></a><br>"
+                         "<a href=\"javascript:void(0);\" onclick=\"set_para(\'中国中车\');\">"
+                         "<font color=#3366cc>中国中车的明日压力位和支撑位？</font></a><br>"
+                         "点击上方蓝色问题或者输入关键字查询（例如：宝盈线、铜主力、美尔雅、600107）"
+                  },
+                 ]
+        }
 
     elif para == "宝盈线":
+        logging.debug(para)
         data_type = 11  # 固定内容回复
         ret = {"messages":
                    [{"t": "0",
@@ -95,21 +93,25 @@ def query(request):
                     ]
                }
     else:  # 需要查库的操作
-        if para.isdigit():  # 全数字为股票代码
-            if len(para) == 6:
-                ret = {"messages":
-                           [{"t": "0",
-                             "msg": query_stock(para)}
-                            ]
-                       }
-            else:
-                ret = {"messages":
-                           [{"t": "0", "msg": "错误的股票代码!"}]
-                       }
-                flag = False
+        if para.isdigit() and len(para) == 6:  # 全数字为股票代码
+            logging.debug(para)
+            ret = {
+                "messages":
+                    [{"t": "0",
+                      "msg": query_stock_code(para)}
+                     ]
+            }
+            # else:
+            #     logging.debug(para)
+            #     ret = {
+            #         "messages":
+            #             [{"t": "0", "msg": "错误的股票代码!"}]
+            #            }
+            #     flag = False
         else:  # 非数字--> 查询股票或期货
             # 先匹配期货信息
             if len(para) > 2 and para.endswith("主力"):  # 查询主力合约
+                logging.debug(para)
                 ret = {"messages":
                            [{"t": "0",
                              "msg": query_futures_name(para)},
@@ -118,72 +120,100 @@ def query(request):
                             ]
                        }
             elif len(para) > 2 and para.endswith("指数"):  # 查询主力指数
+                logging.debug(para)
                 ret = {"messages":
                            [{"t": "0",
                              "msg": query_futures_name(para)}
                             ]
                        }
             elif re.match(r'^[A-Za-z]+\d+$', para):  # 以字母开头以数字结尾的字符串, 为期货信息, 如果cu1711
+                logging.debug(para)
                 code = re.search(r'^[A-Za-z]+', para)
                 obj = models.Futures.objects.filter(code=code.group()).first()
                 if obj:
-                    ret = {"messages":
-                               [{"t": "0",
-                                 "msg": query_futures_code(para)},
-                                {"t": "1",
-                                 "msg": hy_msg.format(name=obj.name)}
-                                ]
-                           }
+                    logging.debug(para)
+                    ret = {
+                        "messages":
+                            [{"t": "0",
+                              "msg": query_futures_code(para)},
+                             {"t": "1",
+                              "msg": hy_msg.format(name=obj.name)}
+                             ]
+                    }
                     data_type = 12
+                if not obj:
+                    obj = models.Futures.objects.filter(name=code.group()).first()
+                    if obj:
+                        logging.debug(para)
+                        ret = {
+                            "messages":
+                                [{"t": "0",
+                                  "msg": query_futures_name(para)},
+                                 {"t": "1",
+                                  "msg": hy_msg.format(name=obj.name)}
+                                 ]
+                        }
+                        data_type = 12
                 else:
+                    logging.debug(para)
                     data_type = 99
                     flag = False
                     ret = ret_default
             elif re.match(r'^.+\d+$', para):  # 以中文开头以数字结尾的字符串, 为期货信息, 如果铜1711
+                logging.debug(para)
                 new_para = re.search(r'\d+', para).group()
-                ret = {"messages":
-                           [{"t": "0",
-                             "msg": query_futures_name(para)},
-                            {"t": "1",
-                             "msg": hy_msg.format(name=para.replace(new_para, ""))}
-                            ]
+                ret = {
+                    "messages":
+                        [{"t": "0",
+                          "msg": query_futures_name(para)},
+                         {"t": "1",
+                          "msg": hy_msg.format(name=para.replace(new_para, ""))}
+                         ]
                        }
             else:
                 msg = ""
+                """
                 if re.match(r'[A-Za-z]+', para):  # 匹配到纯字母, 获取期货信息
+                    logging.debug(para)
                     data_all = models.Data.objects.filter(code__istartswith=para)
                     if data_all:
+                        logging.debug(data_all)
                         for data in data_all:
                             msg += js_msg.format(name=data.name)
                             data_type = data.dataType
+                        logging.debug(msg)
                         ret = {"messages":
                                    [{"t": "1",
                                      "msg": msg}
                                     ]
                                }
                     else:
+                        logging.debug(data_all)
                         ret = ret_default
                         data_type = 99
                         flag = False
-                else:  # 先获取期货品种信息
-                    if para.endswith("更多"):
-                        new_para = para.replace("更多", "")
-                    else:
-                        new_para = para
-                    futures = models.Futures.objects.filter(veriety__startswith=new_para)
+                """
+                # 先获取期货品种分类信息
+                logging.debug(para)
+                if para.endswith("更多"):
+                    para = para.replace("更多", "")
 
-                    if futures.count() >= 24:
+                futures = models.Futures.objects.filter(veriety=para)
+
+                if futures.count() >= 1:
+                    logging.debug(futures)
+                    if futures.count() >= 23:
                         ret = ret_default
                         data_type = 99
                         flag = False
-                    elif futures.count() >= 1:
-                        last_msg = new_para
+                    else:
+                        last_msg = para
                         data_type = 12
                         num = 0
                         for future in futures:
                             data_type = 12
                             num += 1
-                            if futures.count() > 15:  # 多于15条记录, 分次返回
+                            if futures.count() > 15:  # 多于15且少于23条记录, 分次返回, 首次返回11条
                                 if para.endswith("更多"):
                                     if num >= 12:
                                         msg += js_msg.format(name=future.name)
@@ -195,72 +225,86 @@ def query(request):
                                     break
                             else:  # 小于等于15条记录, 一次返回所有结果
                                 msg += js_msg.format(name=future.name)
-                        ret = {"messages":
-                                   [{"t": "1",
-                                     "msg": msg}
-                                    ]
-                               }
+                        ret = {
+                            "messages":
+                                [{"t": "1", "msg": msg}]
+                        }
                         data_count(data_type)
-                    else:  # 不是期货品种关键字
-                        product = models.Products.objects.filter(pname=para).first()  # 获取期货产品关键字
-                        if product:
-                            query_name = product.fname
+                else:  # 不是期货品种分类
+                    logging.debug(para)
+                    # 判断是否模糊匹配关键字
+                    product = models.Products.objects.filter(pname=para).first()  # 获取期货产品关键字
+                    if product:
+                        para = product.fname
+                        data_all = models.Data.objects.filter(name__istartswith=para, dataType__gte=1)
+                    else:
+                        # 判断是否期货名称
+                        name = models.Futures.objects.filter(name=para).first()
+                        if name:
+                            data_all = models.Data.objects.filter(name__istartswith=para, dataType__gte=1)
                         else:
-                            query_name = para
-                        data_all = models.Data.objects.filter(name__istartswith=query_name, dataType__gte=1)
-                        if not data_all:
-                            data_all = models.Data.objects.filter(name__istartswith=query_name, dataType=0)
-                        if data_all:
-                            counts = data_all.count()
-                            num = 0
-                            t = "1"
-                            for data in data_all:
-                                num += 1
-                                if data.dataType == 0:  # 查询结果为股票
-                                    data_type = 0
-                                    last_msg = query_name
-                                    dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing,
-                                               turnover=data.turnover,
-                                               totalMoney=data.totalMoney, pressure=data.pressure, support=data.support,
-                                               tPressure=data.tPressure,
+                            # 判断是否期货代码
+                            code = models.Futures.objects.filter(code=para).first()
+                            if code:
+                                data_all = models.Data.objects.filter(code__istartswith=para, dataType__gte=1)
+                            else:
+                                if len(para) >= 3:
+                                    data_all = models.Data.objects.filter(name__istartswith=para, dataType=0)
+                                else:
+                                    data_all = models.Data.objects.filter(name__istartswith=para, dataType__gte=1)
+                    if data_all:
+                        logging.debug(data_all)
+                        counts = data_all.count()
+                        num = 0
+                        t = "1"
+                        for data in data_all:
+                            num += 1
+                            if data.dataType == 0:  # 查询结果为股票
+                                data_type = 0
+                                last_msg = para
+                                dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing,
+                                           turnover=data.turnover,
+                                           totalMoney=data.totalMoney, pressure=data.pressure, support=data.support,
+                                           tPressure=data.tPressure,
+                                           tSupport=data.tSupport, today=date2str(data.dataDate),
+                                           tomorrow=date2str(data.nextDate), dataType=data.dataType)
+                                msg = ret_msg.format(**dic)
+                                t = "0"
+                                break
+                            # if re.match(r'.*\d+\Z', data.name):
+                            else:  # 查询结果为期货信息(datatype>=1)
+                                logging.debug("查询结果为期货信息")
+                                data_type = data.dataType
+                                if counts == 1:
+                                    dic = dict(code=data.code, name=data.name, gains=data.gains,
+                                               closing=data.closing, turnover=data.turnover,
+                                               totalMoney=data.totalMoney, pressure=data.pressure,
+                                               support=data.support, tPressure=data.tPressure,
                                                tSupport=data.tSupport, today=date2str(data.dataDate),
                                                tomorrow=date2str(data.nextDate), dataType=data.dataType)
                                     msg = ret_msg.format(**dic)
                                     t = "0"
                                     break
-                                # if re.match(r'.*\d+\Z', data.name):
-                                else:  # 查询结果为期货信息(datatype>=1)
-                                    data_type = data.dataType
-                                    if counts == 1:
-                                        dic = dict(code=data.code, name=data.name, gains=data.gains,
-                                                   closing=data.closing, turnover=data.turnover,
-                                                   totalMoney=data.totalMoney, pressure=data.pressure,
-                                                   support=data.support, tPressure=data.tPressure,
-                                                   tSupport=data.tSupport, today=date2str(data.dataDate),
-                                                   tomorrow=date2str(data.nextDate), dataType=data.dataType)
-                                        msg = ret_msg.format(**dic)
-                                        t = "0"
-                                        break
-                                    if counts > 20:  # 结果大于20条, 返回帮助信息
-                                        t = "0"
-                                        msg = "您的关键词不太详细哦，再告诉小美一次吧!"
-                                        data_type = 99
-                                        flag = False
-                                        break
-                                    if counts <= 20:  # 小于20条, 一次返回所有
-                                        t = "1"
-                                        msg += js_msg.format(name=data.name)
-                            ret = {"messages":
-                                       [{"t": t,
-                                         "msg": msg}
-                                        ]
-                                   }
-                        else:
-                            ret = ret_default
-                            data_type = 99
+                                if counts > 20:  # 结果大于20条, 返回帮助信息
+                                    t = "0"
+                                    msg = "您的关键词不太详细哦，再告诉小美一次吧!"
+                                    data_type = 99
+                                    flag = False
+                                    break
+                                if counts <= 20:  # 小于20条, 一次返回所有
+                                    t = "1"
+                                    msg += js_msg.format(name=data.name)
+                        ret = {"messages":
+                                   [{"t": t,
+                                     "msg": msg}
+                                    ]
+                               }
+                    else:
+                        ret = ret_default
+                        data_type = 99
     logger.debug(ret)
     # custom_logger.info("返回消息内容：%s" % ret)
-    write_csv(ret)
+    write_csv(custom_log_msg, ret)
     if data_type:
         data_count(data_type)
     if flag:
@@ -271,10 +315,10 @@ def query(request):
     return HttpResponse("%s" % json.dumps(ret))
 
 
-def query_stock(para):
+def query_stock_code(para):
     """
     股票查询
-    :param para: 股票代码或者股票名称
+    :param para: 股票代码
     :return: 查询结果·
     """
     data_type = 99
@@ -369,20 +413,25 @@ def data_count(data_type):
         logger.error(e)
 
 
-def write_csv(res):
-    log_msg = ""
+def write_csv(log_msg, res):
+    no_ask = "您的关键词不太详细哦，再告诉小美一次吧!"
     try:
         messages = res.get("messages")
         for message in messages:
             t = message.get("t")
             msg = """%s""" % message.get("msg")
             if t == "0":
-                log_msg += msg.replace("<br>", "\n")
+                msg_formatter = msg.replace("<br>", "\n")
+                log_msg += msg_formatter
+                log_msg += ","
+                if no_ask == msg_formatter:
+                    log_msg += "是"
             else:  # t == 1, 带链接, 设置了字体颜色
                 pattern = r'<font .*?>(.*?)</font>'
                 items = re.findall(pattern, msg.replace("'", ""), re.S | re.M)
                 logger.debug("解析结果:%s" % items)
                 log_msg += "\n".join(items)
+                log_msg += ","
     except Exception as e:
         logger.debug(e)
         log_msg = e
