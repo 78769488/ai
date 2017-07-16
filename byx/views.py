@@ -44,7 +44,7 @@ def query(request):
     custom_log_msg += para
     custom_log_msg += ","
     # custom_logger.info("%s" % para)
-    para = para.upper()
+    para = para.strip().upper()
     ret_default = {
         "messages":
             [{"t": "0",
@@ -248,10 +248,26 @@ def query(request):
                             if code:
                                 data_all = models.Data.objects.filter(code__istartswith=para, dataType__gte=1)
                             else:
-                                if len(para) >= 3:
-                                    data_all = models.Data.objects.filter(name__istartswith=para, dataType=0)
-                                else:
-                                    data_all = models.Data.objects.filter(name__istartswith=para, dataType__gte=1)
+                                # 模糊匹配期货名称
+                                print("模糊匹配期货名称")
+                                data_all = models.Data.objects.filter(name__istartswith=para, dataType__gte=1)
+                                if not data_all:
+                                    print("模糊匹配期货代码")
+                                    # 模糊匹配期货代码
+                                    data_all = models.Data.objects.filter(code__istartswith=para, dataType__gte=1)
+                                    if not data_all:
+                                        # 模糊匹配股票名称
+                                        print("模糊匹配股票名称")
+                                        data_all = models.Data.objects.filter(name__istartswith=para, dataType=0)
+                                        if not data_all:
+                                            # 模糊匹配股票代码
+                                            print("模糊匹配股票代码h")
+                                            data_all = models.Data.objects.filter(code__istartswith=para,
+                                                                                  dataType__gte=0)
+                                            # if len(para) >= 3:
+                                            #     data_all = models.Data.objects.filter(name__istartswith=para, dataType=0)
+                                            # else:
+                                            #     data_all = models.Data.objects.filter(name__istartswith=para, dataType__gte=1)
                     if data_all:
                         logging.debug(data_all)
                         counts = data_all.count()
