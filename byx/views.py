@@ -448,9 +448,9 @@ def write_csv(custom_log_msg, res):
                 log_msg += "\n".join(items)
 
         custom_log_msg += '"%s"' % log_msg
-        log_msg += '","'
+        custom_log_msg += ','
         if no_ask_flag:
-            log_msg += '"是"'
+            custom_log_msg += '"%s"' % "是"
     except Exception as e:
         logger.debug(e)
         log_msg = e
