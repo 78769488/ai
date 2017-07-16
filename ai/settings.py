@@ -165,6 +165,7 @@ print("Initializing LOGGING in settings.py - if you see this more than once use 
 # logging日志配置
 
 CUSTOM_INFO_LOG = "/home/tomcat-7/res_mfc/ailog"
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
