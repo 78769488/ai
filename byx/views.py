@@ -430,6 +430,7 @@ def data_count(data_type):
 def write_csv(custom_log_msg, res):
     no_ask = "您的关键词不太详细哦，再告诉小美一次吧!"
     log_msg = ''
+    no_ask_flag = False
     try:
         messages = res.get("messages")
         for message in messages:
@@ -437,6 +438,8 @@ def write_csv(custom_log_msg, res):
             msg = """%s""" % message.get("msg")
             if t == "0":
                 msg_formatter = msg.replace("<br>", "\n")
+                if no_ask == msg_formatter:
+                    no_ask_flag = True
                 log_msg += msg_formatter
             else:  # t == 1, 带链接, 设置了字体颜色
                 pattern = r'<font .*?>(.*?)</font>'
@@ -446,7 +449,7 @@ def write_csv(custom_log_msg, res):
 
         custom_log_msg += '"%s"' % log_msg
         log_msg += '","'
-        if no_ask == log_msg:
+        if no_ask_flag:
             log_msg += '"是"'
     except Exception as e:
         logger.debug(e)
