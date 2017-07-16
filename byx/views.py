@@ -93,21 +93,22 @@ def query(request):
                     ]
                }
     else:  # 需要查库的操作
-        if para.isdigit() and len(para) == 6:  # 全数字为股票代码
-            logging.debug(para)
-            ret = {
-                "messages":
-                    [{"t": "0",
-                      "msg": query_stock_code(para)}
-                     ]
-            }
-            # else:
-            #     logging.debug(para)
-            #     ret = {
-            #         "messages":
-            #             [{"t": "0", "msg": "错误的股票代码!"}]
-            #            }
-            #     flag = False
+        if para.isdigit():
+            if len(para) == 6:  # 全数字为股票代码
+                logging.debug(para)
+                ret = {
+                    "messages":
+                        [{"t": "0",
+                          "msg": query_stock_code(para)}
+                         ]
+                }
+            else:
+                logging.debug(para)
+                ret = {
+                    "messages":
+                        [{"t": "0", "msg": "错误的股票代码!"}]
+                }
+                flag = False
         else:  # 非数字--> 查询股票或期货
             # 先匹配期货信息
             if len(para) > 2 and para.endswith("主力"):  # 查询主力合约
