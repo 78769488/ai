@@ -41,7 +41,7 @@ def query(request):
     para = request.GET.get("para")  # 获取用户输入的内容
     logger.debug("用户上行内容：%s" % para)
     custom_log_msg = ""
-    custom_log_msg += para
+    custom_log_msg += '"%s"' % para
     custom_log_msg += ","
     # custom_logger.info("%s" % para)
     para = para.strip().upper()
@@ -429,8 +429,9 @@ def data_count(data_type):
         logger.error(e)
 
 
-def write_csv(log_msg, res):
+def write_csv(custom_log_msg, res):
     no_ask = "您的关键词不太详细哦，再告诉小美一次吧!"
+    log_msg = ''
     try:
         messages = res.get("messages")
         for message in messages:
@@ -438,18 +439,19 @@ def write_csv(log_msg, res):
             msg = """%s""" % message.get("msg")
             if t == "0":
                 msg_formatter = msg.replace("<br>", "\n")
-                log_msg += msg_formatter
+                log_msg += '"%s"' % msg_formatter
                 log_msg += ","
                 if no_ask == msg_formatter:
-                    log_msg += "是"
+                    log_msg += '"是"'
             else:  # t == 1, 带链接, 设置了字体颜色
                 pattern = r'<font .*?>(.*?)</font>'
                 items = re.findall(pattern, msg.replace("'", ""), re.S | re.M)
                 logger.debug("解析结果:%s" % items)
-                log_msg += "\n".join(items)
+                log_msg += '"%s"' % "\n".join(items)
                 log_msg += ","
+        custom_log_msg += log_msg
     except Exception as e:
         logger.debug(e)
         log_msg = e
     finally:
-        custom_logger.info(log_msg)
+        custom_logger.info(custom_log_msg)

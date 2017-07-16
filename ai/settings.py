@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'nmlwm&9dh8xc+rw+b8y0^6coa&k%upu8uk!u8_2wwnhg37nm-#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*", ]
 
@@ -163,17 +163,19 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL = EMAIL_HOST_USER  # 设置发件人
 '''
 print("Initializing LOGGING in settings.py - if you see this more than once use 'runserver --noreload'")
 # logging日志配置
+
 CUSTOM_INFO_LOG = "/home/tomcat-7/res_mfc/ailog"
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'formatters': {  # 日志格式
         'standard': {
-            # 'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}
-            'format': '%(asctime)s [%(filename)s:%(lineno)d] [%(levelname)s]- %(message)s'},
+            'format':
+                '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'},
+        # 'format': '%(asctime)s [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'},
         'custom': {
             # 'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}
-            'format': '"%(asctime)s","%(message)s"'}
+            'format': '%(asctime)s,%(message)s'}
     },
     'filters': {  # 过滤器
         'require_debug_false': {
@@ -193,8 +195,27 @@ LOGGING = {
         # },
         # 'debug': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
         #     'level': 'DEBUG',
+        #     'encoding': 'utf-8',
         #     'class': 'logging.handlers.RotatingFileHandler',
         #     'filename': os.path.join(BASE_DIR, "log", 'debug.log'),  # 日志输出文件
+        #     'maxBytes': 1024 * 1024 * 5,  # 文件大小
+        #     'backupCount': 5,  # 备份份数
+        #     'formatter': 'standard',  # 使用哪种formatters日志格式
+        # },
+        # 'error': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
+        #     'level': 'ERROR',
+        #     'encoding': 'utf-8',
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'filename': os.path.join(BASE_DIR, "log", 'error.log'),  # 日志输出文件
+        #     'maxBytes': 1024 * 1024 * 5,  # 文件大小
+        #     'backupCount': 5,  # 备份份数
+        #     'formatter': 'standard',  # 使用哪种formatters日志格式
+        # },
+        # 'info': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
+        #     'level': 'INFO',
+        #     'encoding': 'utf-8',
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'filename': os.path.join(BASE_DIR, "log", 'info.csv'),  # 日志输出文件
         #     'maxBytes': 1024 * 1024 * 5,  # 文件大小
         #     'backupCount': 5,  # 备份份数
         #     'formatter': 'standard',  # 使用哪种formatters日志格式
@@ -222,8 +243,8 @@ LOGGING = {
         'info': {  # 记录到日志文件(需要创建对应的目录，否则会出错), when='h', interval=1, backupCount=0
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            # 'filename': os.path.join(BASE_DIR, "log", 'custom_info.log'),  # 日志输出文件
-            'filename': os.path.join(CUSTOM_INFO_LOG, 'custom_info.csv'),  # 日志输出文件
+            'filename': os.path.join(BASE_DIR, "log", 'custom_info.log'),  # 日志输出文件
+            # 'filename': os.path.join(CUSTOM_INFO_LOG, 'custom_info.csv'),  # 日志输出文件
             'when': 'midnight',
             'interval': 1,
             # 'encoding': 'utf-8',
