@@ -437,7 +437,7 @@ def write_csv(custom_log_msg, res):
             msg = """%s""" % message.get("msg")
             if t == "0":
                 msg_formatter = msg.replace("<br>", "\n")
-                log_msg += '"%s"' % msg_formatter
+                log_msg += msg_formatter
                 log_msg += ","
                 if no_ask == msg_formatter:
                     log_msg += '"是"'
@@ -445,9 +445,9 @@ def write_csv(custom_log_msg, res):
                 pattern = r'<font .*?>(.*?)</font>'
                 items = re.findall(pattern, msg.replace("'", ""), re.S | re.M)
                 logger.debug("解析结果:%s" % items)
-                log_msg += '"%s"' % "\n".join(items)
+                log_msg += "\n".join(items)
                 log_msg += ","
-        custom_log_msg += log_msg
+        custom_log_msg += '"%s"' % log_msg
     except Exception as e:
         logger.debug(e)
         log_msg = e
