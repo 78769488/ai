@@ -104,10 +104,7 @@ def query(request):
                 }
             else:
                 logging.debug(para)
-                ret = {
-                    "messages":
-                        [{"t": "0", "msg": "错误的股票代码!"}]
-                }
+                ret = ret_default
                 flag = False
         else:  # 非数字--> 查询股票或期货
             # 先匹配期货信息
