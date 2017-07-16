@@ -175,7 +175,7 @@ LOGGING = {
         # 'format': '%(asctime)s [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'},
         'custom': {
             # 'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}
-            'format': '%(asctime)s,%(message)s'}
+            'format': '"%(asctime)s",%(message)s'}
     },
     'filters': {  # 过滤器
         'require_debug_false': {
@@ -193,65 +193,65 @@ LOGGING = {
         #     'filters': ['require_debug_false'],  # 仅当 DEBUG = False 时才发送邮件
         #     'include_html': True,
         # },
-        # 'debug': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
-        #     'level': 'DEBUG',
-        #     'encoding': 'utf-8',
-        #     'class': 'logging.handlers.RotatingFileHandler',
-        #     'filename': os.path.join(BASE_DIR, "log", 'debug.log'),  # 日志输出文件
-        #     'maxBytes': 1024 * 1024 * 5,  # 文件大小
-        #     'backupCount': 5,  # 备份份数
-        #     'formatter': 'standard',  # 使用哪种formatters日志格式
-        # },
-        # 'error': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
-        #     'level': 'ERROR',
-        #     'encoding': 'utf-8',
-        #     'class': 'logging.handlers.RotatingFileHandler',
-        #     'filename': os.path.join(BASE_DIR, "log", 'error.log'),  # 日志输出文件
-        #     'maxBytes': 1024 * 1024 * 5,  # 文件大小
-        #     'backupCount': 5,  # 备份份数
-        #     'formatter': 'standard',  # 使用哪种formatters日志格式
-        # },
-        # 'info': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
-        #     'level': 'INFO',
-        #     'encoding': 'utf-8',
-        #     'class': 'logging.handlers.RotatingFileHandler',
-        #     'filename': os.path.join(BASE_DIR, "log", 'info.csv'),  # 日志输出文件
-        #     'maxBytes': 1024 * 1024 * 5,  # 文件大小
-        #     'backupCount': 5,  # 备份份数
-        #     'formatter': 'standard',  # 使用哪种formatters日志格式
-        # },
-        'debug': {  # 记录到日志文件(需要创建对应的目录，否则会出错), when='h', interval=1, backupCount=0
+        'debug': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
             'level': 'DEBUG',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'encoding': 'utf-8',
+            'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(BASE_DIR, "log", 'debug.log'),  # 日志输出文件
-            'when': 'H',
-            'interval': 1,
-            'encoding': 'utf-8',
-            'backupCount': 744,  # 备份份数
+            'maxBytes': 1024 * 1024 * 5,  # 文件大小
+            'backupCount': 5,  # 备份份数
             'formatter': 'standard',  # 使用哪种formatters日志格式
         },
-        'error': {  # 记录到日志文件(需要创建对应的目录，否则会出错), when='h', interval=1, backupCount=0
+        'error': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
             'level': 'ERROR',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, "log", 'error.log'),  # 日志输出文件
-            'when': 'midnight',
-            'interval': 1,
             'encoding': 'utf-8',
-            'backupCount': 31,  # 备份份数
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, "log", 'error.log'),  # 日志输出文件
+            'maxBytes': 1024 * 1024 * 5,  # 文件大小
+            'backupCount': 5,  # 备份份数
             'formatter': 'standard',  # 使用哪种formatters日志格式
         },
-        'info': {  # 记录到日志文件(需要创建对应的目录，否则会出错), when='h', interval=1, backupCount=0
+        'info': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
             'level': 'INFO',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            # 'filename': os.path.join(BASE_DIR, "log", 'custom_info.log'),  # 日志输出文件
-            'filename': os.path.join(CUSTOM_INFO_LOG, 'custom_info.csv'),  # 日志输出文件
-            'when': 'midnight',
-            'interval': 1,
-            # 'encoding': 'utf-8',
-            'encoding': 'gbk',
-            'backupCount': 31,  # 备份份数
-            'formatter': 'custom',  # 使用哪种formatters日志格式
+            'encoding': 'utf-8',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, "log", 'info.csv'),  # 日志输出文件
+            'maxBytes': 1024 * 1024 * 5,  # 文件大小
+            'backupCount': 5,  # 备份份数
+            'formatter': 'standard',  # 使用哪种formatters日志格式
         },
+        # 'debug': {  # 记录到日志文件(需要创建对应的目录，否则会出错), when='h', interval=1, backupCount=0
+        #     'level': 'DEBUG',
+        #     'class': 'logging.handlers.TimedRotatingFileHandler',
+        #     'filename': os.path.join(BASE_DIR, "log", 'debug.log'),  # 日志输出文件
+        #     'when': 'H',
+        #     'interval': 1,
+        #     'encoding': 'utf-8',
+        #     'backupCount': 744,  # 备份份数
+        #     'formatter': 'standard',  # 使用哪种formatters日志格式
+        # },
+        # 'error': {  # 记录到日志文件(需要创建对应的目录，否则会出错), when='h', interval=1, backupCount=0
+        #     'level': 'ERROR',
+        #     'class': 'logging.handlers.TimedRotatingFileHandler',
+        #     'filename': os.path.join(BASE_DIR, "log", 'error.log'),  # 日志输出文件
+        #     'when': 'midnight',
+        #     'interval': 1,
+        #     'encoding': 'utf-8',
+        #     'backupCount': 31,  # 备份份数
+        #     'formatter': 'standard',  # 使用哪种formatters日志格式
+        # },
+        # 'info': {  # 记录到日志文件(需要创建对应的目录，否则会出错), when='h', interval=1, backupCount=0
+        #     'level': 'INFO',
+        #     'class': 'logging.handlers.TimedRotatingFileHandler',
+        #     # 'filename': os.path.join(BASE_DIR, "log", 'custom_info.log'),  # 日志输出文件
+        #     'filename': os.path.join(CUSTOM_INFO_LOG, 'custom_info.csv'),  # 日志输出文件
+        #     'when': 'midnight',
+        #     'interval': 1,
+        #     # 'encoding': 'utf-8',
+        #     'encoding': 'gbk',
+        #     'backupCount': 31,  # 备份份数
+        #     'formatter': 'custom',  # 使用哪种formatters日志格式
+        # },
         'console': {  # 输出到控制台
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
