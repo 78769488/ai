@@ -41,7 +41,10 @@ def query(request):
     para = request.GET.get("para")  # 获取用户输入的内容
     logger.debug("用户上行内容：%s" % para)
     custom_log_msg = ""
-    custom_log_msg += '"%s"' % para
+    if para.isdigit():
+        custom_log_msg += '"%s%s"' % ("'", para)
+    else:
+        custom_log_msg += '"%s"' % para
     custom_log_msg += ","
     # custom_logger.info("%s" % para)
     para = para.strip().upper()
