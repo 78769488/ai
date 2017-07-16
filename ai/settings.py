@@ -220,6 +220,7 @@ LOGGING = {
         #     'backupCount': 5,  # 备份份数
         #     'formatter': 'standard',  # 使用哪种formatters日志格式
         # },
+        # 生产环境
         'debug': {  # 记录到日志文件(需要创建对应的目录，否则会出错), when='h', interval=1, backupCount=0
             'level': 'DEBUG',
             'class': 'logging.handlers.TimedRotatingFileHandler',
