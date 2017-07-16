@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://E:\PycharmProjects\AiRobot\.idea\AiRobot.iml" filepath="E:\PycharmProjects\AiRobot\.idea\AiRobot.iml" />
       <module fileurl="file://$PROJECT_DIR$/../CRBT/.idea/CRBT.iml" filepath="$PROJECT_DIR$/../CRBT/.idea/CRBT.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../CRBT_NEW/.idea/CRBT_NEW.iml" filepath="$PROJECT_DIR$/../CRBT_NEW/.idea/CRBT_NEW.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../PyQt5/.idea/PyQt5.iml" filepath="$PROJECT_DIR$/../PyQt5/.idea/PyQt5.iml" />
       <module fileurl="file://$PROJECT_DIR$/../ahkx/.idea/ahkx.iml" filepath="$PROJECT_DIR$/../ahkx/.idea/ahkx.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/ai.iml" filepath="$PROJECT_DIR$/.idea/ai.iml" />
     </modules>
