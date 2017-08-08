@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 # Create your models here.
@@ -16,7 +17,7 @@ class Data(models.Model):
     tSupport = models.CharField(max_length=32, verbose_name="明日支撑")
     dataDate = models.DateField(verbose_name="数据日期")
     nextDate = models.DateField(verbose_name="下个交易日")
-    upTime = models.DateTimeField(verbose_name="数据更新时间", auto_now=True)
+    upTime = models.DateTimeField(verbose_name="数据更新时间", default=timezone.now)
     dataType = models.IntegerField(verbose_name="数据类型, 0 :股票 >1: 期货")
     upUser = models.CharField(max_length=32, verbose_name="数据更新者")
 
