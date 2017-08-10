@@ -113,7 +113,7 @@ def query(request):
             # 先匹配期货信息
             if len(para) > 2 and para.endswith("主力"):  # 查询主力合约
                 logging.debug(para)
-                para.replace("主力", "主连")
+                para = para.replace("主力", "主连")
                 ret = {"messages":
                            [{"t": "0",
                              "msg": query_futures_name(para)},
