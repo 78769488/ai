@@ -77,7 +77,7 @@ def query(request):
                   "msg": "以下是否为您需要的问题：<br>"
                          "<a href=\"javascript:void(0);\" onclick=\"set_para(\'宝盈线\');\">"
                          "<font color=#3366cc>宝盈线是什么？</font></a><br>"
-                         "<a href=\"javascript:void(0);\" onclick=\"set_para(\'铜\');\">"
+                         "<a href=\"javascript:void(0);\" onclick=\"set_para(\'铜主力\');\">"
                          "<font color=#3366cc>铜主力合约的明日压力位和支撑位？</font></a><br>"
                          "<a href=\"javascript:void(0);\" onclick=\"set_para(\'中国中车\');\">"
                          "<font color=#3366cc>中国中车的明日压力位和支撑位？</font></a><br>"
