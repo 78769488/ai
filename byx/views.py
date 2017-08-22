@@ -55,7 +55,7 @@ def query(request):
              ]
     }
     js_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\"><font color=#3366cc>{name}</font></a><br>"
-    hy_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\"><font color=#3366cc>查询{name}的其它合约！</font></a>"
+    hy_msg = "<a href=\"javascript:void(0);\" onclick=\"set_para(\'{name}\');\"><font color=#3366cc>查询{name}的其它合约</font></a>"
     data_type = None
     flag = True
     session_last_msg = request.session.get("last_msg", None)
