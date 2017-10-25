@@ -22,8 +22,9 @@ type_dic = {
     99: "无效上行"
 }
 
-ret_msg = "代码: {code}<br>名称: {name}<br>涨幅: {gains}<br>收盘: {closing}<br>成交量: {turnover}<br>总金额: {totalMoney}<br>{" \
-          "today}压力: {pressure}<br>{today}支撑: {support}<br>{tomorrow}压力: {tPressure}<br>{tomorrow}支撑: {tSupport}<br>"
+ret_msg = "代码: {code}<br>名称: {name}<br>涨幅: {gains}<br>收盘: {closing}<br>成交量: {turnover}<br>总金额: {totalMoney}" \
+          "<br>强弱线: {marsi}<br>多空预测: {dk}<br>{today}压力: {pressure}<br>{today}支撑: {support}<br>{tomorrow}压力: {" \
+          "tPressure}<br>{tomorrow}支撑: {tSupport}<br> "
 
 
 def index(request):
@@ -289,8 +290,11 @@ def query(request):
                             if data.dataType == 0:  # 查询结果为股票
                                 data_type = 0
                                 last_msg = para
+                                dk = '空'
+                                if data.dk1 > '0' or data.dk2 > '0' or data.dk3 > '0' or data.dk4 > '0':
+                                    dk = '多'
                                 dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing,
-                                           turnover=data.turnover,
+                                           turnover=data.turnover, marsi=data.marsi, dk=dk,
                                            totalMoney=data.totalMoney, pressure=data.pressure, support=data.support,
                                            tPressure=data.tPressure,
                                            tSupport=data.tSupport, today=date2str(data.dataDate),
@@ -303,8 +307,11 @@ def query(request):
                                 logging.debug("查询结果为期货信息")
                                 data_type = data.dataType
                                 if counts == 1:
+                                    dk = '空'
+                                    if data.dk1 > '0' or data.dk2 > '0' or data.dk3 > '0' or data.dk4 > '0':
+                                        dk = '多'
                                     dic = dict(code=data.code, name=data.name, gains=data.gains,
-                                               closing=data.closing, turnover=data.turnover,
+                                               closing=data.closing, turnover=data.turnover, marsi=data.marsi, dk=dk,
                                                totalMoney=data.totalMoney, pressure=data.pressure,
                                                support=data.support, tPressure=data.tPressure,
                                                tSupport=data.tSupport, today=date2str(data.dataDate),
@@ -354,8 +361,11 @@ def query_stock_code(para):
         data = models.Data.objects.filter(code=para).first()
         logger.debug("股票查询：%s" % connection.queries)
         if data:
+            dk = '空'
+            if data.dk1 > '0' or data.dk2 > '0' or data.dk3 > '0' or data.dk4 > '0':
+                dk = '多'
             dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
-                       totalMoney=data.totalMoney, pressure=data.pressure, support=data.support,
+                       totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, marsi=data.marsi, dk=dk,
                        tPressure=data.tPressure, tSupport=data.tSupport, today=date2str(data.dataDate),
                        tomorrow=date2str(data.nextDate))
             msg = ret_msg.format(**dic)
@@ -379,8 +389,11 @@ def query_futures_name(para):
         data = models.Data.objects.filter(name__iendswith=para).first()
         logger.debug("期货主力合约及指数(名称)查询：%s" % connection.queries)
         if data:
+            dk = '空'
+            if data.dk1 > '0' or data.dk2 > '0' or data.dk3 > '0' or data.dk4 > '0':
+                dk = '多'
             dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
-                       totalMoney=data.totalMoney, pressure=data.pressure, support=data.support,
+                       totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, marsi=data.marsi, dk=dk,
                        tPressure=data.tPressure, tSupport=data.tSupport, today=date2str(data.dataDate),
                        tomorrow=date2str(data.nextDate))
             msg = ret_msg.format(**dic)
@@ -404,8 +417,11 @@ def query_futures_code(para):
         data = models.Data.objects.filter(code__icontains=para).first()
         logger.debug("期货主力合约及指数(代码)查询：%s" % connection.queries)
         if data:
+            dk = '空'
+            if data.dk1 > '0' or data.dk2 > '0' or data.dk3 > '0' or data.dk4 > '0':
+                dk = '多'
             dic = dict(code=data.code, name=data.name, gains=data.gains, closing=data.closing, turnover=data.turnover,
-                       totalMoney=data.totalMoney, pressure=data.pressure, support=data.support,
+                       totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, marsi=data.marsi, dk=dk,
                        tPressure=data.tPressure, tSupport=data.tSupport, today=date2str(data.dataDate),
                        tomorrow=date2str(data.nextDate))
             msg = ret_msg.format(**dic)
