@@ -141,7 +141,9 @@ def query(request):
             elif re.match(r'^[A-Za-z]+\d+$', para):  # 以字母开头以数字结尾的字符串, 为期货信息, 如果cu1711
                 logging.debug(para)
                 code = re.search(r'^[A-Za-z]+', para)
+                print(code)
                 obj = models.Futures.objects.filter(code=code.group()).first()
+                print(obj, obj.name)
                 if obj:
                     logging.debug(para)
                     ret = {
@@ -153,7 +155,8 @@ def query(request):
                              ]
                     }
                     data_type = 12
-                if not obj:
+                # if not obj:
+                else:
                     obj = models.Futures.objects.filter(name=code.group()).first()
                     if obj:
                         logging.debug(para)
@@ -166,11 +169,11 @@ def query(request):
                                  ]
                         }
                         data_type = 12
-                else:
-                    logging.debug(para)
-                    data_type = 99
-                    flag = False
-                    ret = ret_default
+                    else:
+                        logging.debug(para)
+                        data_type = 99
+                        flag = False
+                        ret = ret_default
             elif re.match(r'^.+\d+$', para):  # 以中文开头以数字结尾的字符串, 为期货信息, 如果铜1711
                 logging.debug(para)
                 new_para = re.search(r'\d+', para).group()
@@ -387,7 +390,8 @@ def query_futures_name(para):
     msg = "您的关键词不太详细哦，再告诉小美一次吧!"
     try:
         data = models.Data.objects.filter(name__iendswith=para).first()
-        logger.debug("期货主力合约及指数(名称)查询：%s" % connection.queries)
+        print('\n\n\n\ndata\n\n\n\n')
+        # logger.debug("期货主力合约及指数(名称)查询：%s" % connection.queries)
         if data:
             dk = '空'
             if data.dk1 > '0' or data.dk2 > '0' or data.dk3 > '0' or data.dk4 > '0':
@@ -415,7 +419,7 @@ def query_futures_code(para):
     msg = "您的关键词不太详细哦，再告诉小美一次吧!"
     try:
         data = models.Data.objects.filter(code__icontains=para).first()
-        logger.debug("期货主力合约及指数(代码)查询：%s" % connection.queries)
+        # logger.debug("期货主力合约及指数(代码)查询：%s" % connection.queries)
         if data:
             dk = '空'
             if data.dk1 > '0' or data.dk2 > '0' or data.dk3 > '0' or data.dk4 > '0':
