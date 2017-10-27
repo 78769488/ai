@@ -303,7 +303,7 @@ def query(request):
                                            tPressure=data.tPressure,
                                            tSupport=data.tSupport, today=date2str(data.dataDate),
                                            tomorrow=date2str(data.nextDate), dataType=data.dataType)
-                                msg = ret_msg.format(**dic)
+                                msg = gp_msg.format(**dic)
                                 t = "0"
                                 break
                             # if re.match(r'.*\d+\Z', data.name):
