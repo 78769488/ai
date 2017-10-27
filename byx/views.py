@@ -22,7 +22,10 @@ type_dic = {
     99: "无效上行"
 }
 
-ret_msg = "代码: {code}<br>名称: {name}<br>涨幅: {gains}<br>收盘: {closing}<br>成交量: {turnover}<br>总金额: {totalMoney}" \
+ret_msg = "代码: {code}<br>名称: {name}<br>收盘: {closing}<br>成交量: {turnover}<br>总金额: {totalMoney}" \
+          "<br>强弱线: {marsi}<br>多空预测: {dk}<br>{today}压力: {pressure}<br>{today}支撑: {support}<br>{tomorrow}压力: {" \
+          "tPressure}<br>{tomorrow}支撑: {tSupport}<br> "
+gp_msg = "代码: {code}<br>名称: {name}<br>涨幅: {gains}<br>收盘: {closing}<br>成交量: {turnover}<br>总金额: {totalMoney}" \
           "<br>强弱线: {marsi}<br>多空预测: {dk}<br>{today}压力: {pressure}<br>{today}支撑: {support}<br>{tomorrow}压力: {" \
           "tPressure}<br>{tomorrow}支撑: {tSupport}<br> "
 
@@ -141,9 +144,7 @@ def query(request):
             elif re.match(r'^[A-Za-z]+\d+$', para):  # 以字母开头以数字结尾的字符串, 为期货信息, 如果cu1711
                 logging.debug(para)
                 code = re.search(r'^[A-Za-z]+', para)
-                print(code)
                 obj = models.Futures.objects.filter(code=code.group()).first()
-                print(obj, obj.name)
                 if obj:
                     logging.debug(para)
                     ret = {
@@ -371,7 +372,7 @@ def query_stock_code(para):
                        totalMoney=data.totalMoney, pressure=data.pressure, support=data.support, marsi=data.marsi, dk=dk,
                        tPressure=data.tPressure, tSupport=data.tSupport, today=date2str(data.dataDate),
                        tomorrow=date2str(data.nextDate))
-            msg = ret_msg.format(**dic)
+            msg = gp_msg.format(**dic)
             data_type = data.dataType
     except Exception as e:
         logger.error(e)
